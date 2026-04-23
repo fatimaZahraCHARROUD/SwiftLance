@@ -1,37 +1,31 @@
-import { Link, useNavigate } from "react-router-dom";
-import "../App.css";
+import React, { useState } from 'react';
+import { Link } from "react-router-dom";
 
-function Sidebar() {
-  const navigate = useNavigate();
-
-  const logout = () => {
-    // remove auth token
-    localStorage.removeItem("token");
-
-    // redirect to login page
-    navigate("/");
-  };
+function Sidebar({ onSubTabChange }) {
+ 
+  
+  
+  const projects = [
+    { id: 1, progress: 40 },
+    { id: 2, progress: 100 }
+  ];
+  const hasPending = projects.some(p => p.progress < 100);
 
   return (
-    <div className="sidebar">
-      <h2>SwiftLance</h2>
-
-      <ul>
-        <li>
-          <Link to="/app">Dashboard</Link>
-        </li>
-        <li>
-          <Link to="/app/clients">Clients</Link>
-        </li>
-        <li>
-          <Link to="/app/projects">Projects</Link>
-        </li>
-      </ul>
-
-      {/* Logout button */}
-      <button className="logout-btn" onClick={logout}>
-        Logout
-      </button>
+    <div className="w-64 fixed h-screen bg-[#3327db] text-white p-6 shadow-2xl transition-all">
+      <h2 className="text-2xl font-bold mb-10 tracking-wider">SwiftLance</h2>
+      
+   <nav className="space-y-4">
+  {/* ✅ Path dial dashboard index huwa ghi /app */}
+  <Link to="/app" className="...">dashboard</Link> 
+  
+  <Link to="/app/note" className="...">notes</Link>
+  <Link to="/app/tasks" className="...">tasks</Link>
+  <Link to="/app/paiment" className="...">paiment</Link>
+  <Link to="/app/planning" className="...">planning</Link>
+  <Link to="/app/clients" className="...">Clients</Link>
+  <Link to="/app/projects" className="...">Projects</Link>
+</nav>
     </div>
   );
 }

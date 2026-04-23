@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PublicLayout from "./layouts/PublicLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
 
+
 // Public pages
 import Home from "./pages/public/Home";
 import Login from "./pages/public/Login";
@@ -10,6 +11,10 @@ import Login from "./pages/public/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Clients from "./pages/dashboard/Clients";
 import Projects from "./pages/dashboard/Projects";
+import Paiment from "./pages/dashboard/Paiment";
+import  Note from "./pages/dashboard/Note";
+import Tasks from "./pages/dashboard/Tasks";
+import Planning from "./pages/dashboard/Planning";
 
 // Protected route
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -38,6 +43,11 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="clients" element={<Clients />} />
           <Route path="projects" element={<Projects />} />
+          
+          <Route path="note" element={<Note />} />
+          <Route path="paiment" element={<Paiment />} />
+          <Route path="planning" element={<Planning />} />
+          <Route path="tasks" element={<Tasks />} />
         </Route>
 
       </Routes> 

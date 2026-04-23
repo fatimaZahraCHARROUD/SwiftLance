@@ -1,7 +1,10 @@
-import React from 'react'
+import React from 'react';
+import { useOutletContext } from "react-router-dom";
 
 export default function Dashboard() {
-  return (
-    <div>Dashboard</div>
-  )
+  // كنجيبو الـ State من الـ Layout
+  const { activeSubTab } = useOutletContext();
+
+
+  
 }
