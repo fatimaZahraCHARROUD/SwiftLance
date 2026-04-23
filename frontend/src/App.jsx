@@ -5,6 +5,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 // Public pages
 import Home from "./pages/public/Home";
 import Login from "./pages/public/Login";
+import Register from "./pages/public/Register";
 
 // Dashboard pages
 import Dashboard from "./pages/dashboard/Dashboard";
@@ -21,10 +22,12 @@ function App() {
       <Routes>
 
         {/* 🔓 PUBLIC PART */}
-        <Route path="/" element={<PublicLayout />}>
+        {/*<Route path="/" element={<PublicLayout />}>*/}
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
-        </Route>
+          <Route path="/register" element={<Register />} />
+
+        {/*</Route>*/}
 
         {/* 🔐 PRIVATE PART */}
          <Route
