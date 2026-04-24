@@ -9,7 +9,6 @@ function DashboardLayout() {
       {/* 1. Sidebar fixed l-issar */}
       <Sidebar />
 
-
       {/* 2. L-jiha dyal l-imin (TopBar + Content) */}
       <div className="flex-1 flex flex-col overflow-hidden">
         
@@ -20,8 +19,9 @@ function DashboardLayout() {
         <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>
+
        </div>
-    </div>
+      </div>
   );
 }
 
