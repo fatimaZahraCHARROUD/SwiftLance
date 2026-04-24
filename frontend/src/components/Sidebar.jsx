@@ -1,73 +1,77 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from "react-router-dom"; 
 import styles from './Sidebar.module.css';
 import { 
-  Bell, 
-  LayoutDashboard, 
-  StickyNote, 
-  CheckSquare, 
-  Wallet, 
-  Calendar, 
-  Users, 
-  Briefcase,
-  LogOut 
+  LayoutDashboard, StickyNote, CheckSquare, 
+  Wallet, Calendar, Users, Briefcase, LogOut,
+  ChevronLeft, ChevronRight 
 } from 'lucide-react'; 
 
 function Sidebar() {
-  const navigate = useNavigate(); 
-  const projects = [{ id: 1, progress: 40 }, { id: 2, progress: 100 }];
-  const pendingProjectsCount = projects.filter(p => p.progress < 100).length;
+  const navigate = useNavigate();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const getStyle = ({ isActive }) => 
-    isActive ? `${styles.link} ${styles.active}` : styles.link;
+  const getStyle = ({ isActive }) => {
+    let base = styles.link;
+    if (isActive) base += ` ${styles.active}`;
+    if (isCollapsed) base += ` ${styles.collapsedLink}`;
+    return base;
+  };
 
   return (
-    <div className={styles.sidebarContainer}>
+    <div className={`${styles.sidebarContainer} ${isCollapsed ? styles.collapsedSidebar : ''}`}>
+      <button 
+        className={styles.toggleBtn} 
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+      </button>
+
+      {/* Header Section: Safi nqiya ghir l-Logo */}
       <div className={styles.headerSection}>
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">S</div>
-          <h2 className="text-xl font-bold text-white tracking-tight">SwiftLance</h2>
-        </div>
-        
-        <div className={styles.notificationBox}>
-          <Bell size={20} />
-          {pendingProjectsCount > 0 && <span className={styles.badge}>{pendingProjectsCount}</span>}
+        <div className="flex items-center gap-3">
+          <div className="min-w-[35px] h-[35px] bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">
+            S
+          </div>
+          {!isCollapsed && <h2 className="text-xl font-bold text-white tracking-tight">SwiftLance</h2>}
         </div>
       </div>
       
-      <nav className="flex flex-col flex-1">
-        <NavLink to="/app" end className={getStyle}>
-          <LayoutDashboard size={20} /> <span>Analytics</span>
+      {/* Navigation: NavLink dyal Notification t-7eyed mn hna */}
+      <nav className="flex flex-col flex-1 mt-4">
+        <NavLink to="/app" end className={getStyle} title="Analytics">
+          <LayoutDashboard size={20} /> {!isCollapsed && <span>Analytics</span>}
         </NavLink>
         
-        <NavLink to="/app/note" className={getStyle}>
-          <StickyNote size={20} /> <span>Notes</span>
+        <NavLink to="/app/note" className={getStyle} title="Notes">
+          <StickyNote size={20} /> {!isCollapsed && <span>Notes</span>}
         </NavLink>
 
-        <NavLink to="/app/tasks" className={getStyle}>
-          <CheckSquare size={20} /> <span>Tasks</span>
+        <NavLink to="/app/tasks" className={getStyle} title="Tasks">
+          <CheckSquare size={20} /> {!isCollapsed && <span>Tasks</span>}
         </NavLink>
 
-        <NavLink to="/app/paiment" className={getStyle}>
-          <Wallet size={20} /> <span>Payment</span>
+        <NavLink to="/app/paiment" className={getStyle} title="Payment">
+          <Wallet size={20} /> {!isCollapsed && <span>Payment</span>}
         </NavLink>
 
-        <NavLink to="/app/planning" className={getStyle}>
-          <Calendar size={20} /> <span>Planning</span>
+        <NavLink to="/app/planning" className={getStyle} title="Planning">
+          <Calendar size={20} /> {!isCollapsed && <span>Planning</span>}
         </NavLink>
 
-        <NavLink to="/app/clients" className={getStyle}>
-          <Users size={20} /> <span>Customers</span>
+        <NavLink to="/app/clients" className={getStyle} title="Customers">
+          <Users size={20} /> {!isCollapsed && <span>Customers</span>}
         </NavLink>
 
-        <NavLink to="/app/projects" className={getStyle}>
-          <Briefcase size={20} /> <span>Projects</span>
+        <NavLink to="/app/projects" className={getStyle} title="Projects">
+          <Briefcase size={20} /> {!isCollapsed && <span>Projects</span>}
         </NavLink>
       </nav>
 
-      <div className="pt-6 border-t border-white/5">
+      {/* Footer Section */}
+      <div className={`pt-6 border-t border-white/5 ${isCollapsed ? 'flex justify-center' : ''}`}>
         <button onClick={() => navigate('/login')} className={styles.logoutBtn}>
-           <LogOut size={20} /> Se déconnecter
+           <LogOut size={20} /> {!isCollapsed && <span>Se déconnecter</span>}
         </button>
       </div>
     </div>

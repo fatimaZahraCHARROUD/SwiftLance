@@ -8,5 +8,4 @@ function Dashboard() {
     </div>
   );
 }
-
-export default Dashboard; // DAROURIYA!!
+export default Dashboard; 

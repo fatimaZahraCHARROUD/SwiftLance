@@ -15,7 +15,7 @@ import Paiment from "./pages/dashboard/Paiment";
 import  Note from "./pages/dashboard/Note";
 import Tasks from "./pages/dashboard/Tasks";
 import Planning from "./pages/dashboard/Planning";
-
+import Notification from "./pages/dashboard/Notification";
 // Protected route
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -48,6 +48,7 @@ function App() {
           <Route path="paiment" element={<Paiment />} />
           <Route path="planning" element={<Planning />} />
           <Route path="tasks" element={<Tasks />} />
+            <Route path="notification" element={<Notification />} />
         </Route>
 
       </Routes> 
