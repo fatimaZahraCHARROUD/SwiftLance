@@ -1,0 +1,109 @@
+.sidebarContainer {
+  width: 17rem; 
+  position: fixed;
+  height: 100vh;
+  background-color: #1a1c26; 
+  color: #a0aec0; 
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding: 0 0.5rem;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.75rem; 
+  transition: all 0.3s ease;
+  color: #8a8d9b; 
+  text-decoration: none;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+.link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.active {
+  background-color: white !important; 
+  color: #1a1c26 !important; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.logoutBtn {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem;
+  background-color: transparent;
+  color: #ff6b6b;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  transition: 0.3s;
+}
+
+.logoutBtn:hover {
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #3b82f6; /* Blue badge b7al notification pro */
+  color: white;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.notificationBox {
+  position: relative;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge {
+  position: absolute;
+  /* Adjusti hadu bach t-7ett foq l-jarass nichan */
+  top: -2px;      /* Tle3ha chwiya */
+  right: -2px;    /* Jibha l-imin nichan */
+  
+  background-color: #3b82f6; /* Blue badge */
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #1a1c26; 
+  
+}
