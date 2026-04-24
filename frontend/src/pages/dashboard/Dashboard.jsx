@@ -1,7 +1,11 @@
-import React from 'react'
 
-export default function Dashboard() {
+import React from 'react';
+
+function Dashboard() {
   return (
-    <div>Dashboard</div>
-  )
+    <div>
+      <h1 className="text-2xl font-bold">Dashboard Page</h1>
+    </div>
+  );
 }
+export default Dashboard; 
