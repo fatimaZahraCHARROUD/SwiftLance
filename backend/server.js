@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const projectRoutes = require("./src/modules/projects/project.routes");
 
 const connectDB = require("./src/config/db");
 const userRoutes = require("./src/modules/users/user.routes");
@@ -21,7 +22,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/users", userRoutes);
-
+app.use("/api/projects", projectRoutes);
 
 // Server Start
 const PORT = process.env.PORT || 5000;
