@@ -16,6 +16,10 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {  const navigate = useNavigat
     return base;
   };
 
+  const logout = ()=>{
+    localStorage.removeItem("token");
+    navigate('/');
+  }
   return (
     <div className={`${styles.sidebarContainer} ${isCollapsed ? styles.collapsedSidebar : ''}`}>
       <button 
@@ -68,7 +72,7 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {  const navigate = useNavigat
 
       {/* Footer Section */}
       <div className={`pt-6 border-t border-white/5 ${isCollapsed ? 'flex justify-center' : ''}`}>
-        <button onClick={() => navigate('/')} className={styles.logoutBtn}>
+        <button onClick={logout} className={styles.logoutBtn}>
            <LogOut size={20} /> {!isCollapsed && <span>Se déconnecter</span>}
         </button>
       </div>

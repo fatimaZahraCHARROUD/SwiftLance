@@ -30,29 +30,46 @@ export default function Login() {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      // 👉 simple fake auth (replace later with backend)
-      if (email === "admin@gmail.com" && password === "1234") {
-        // store fake token
-        localStorage.setItem("token", "logged-in");
-        if (rememberMe) {
-          localStorage.setItem("rememberEmail", email);
-        }
-        // go to dashboard
-        navigate("/app");
-      } else {
-        setErrors({ general: "Invalid email or password" });
-      }
-      setIsLoading(false);
-    }, 1000);
-  };
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Login failed");
+    }
+
+    // ✅ Save token
+    localStorage.setItem("token", data.token);
+     localStorage.setItem("userName", data.user.fullName);
+    localStorage.setItem("userEmail", data.user.email);
+    localStorage.setItem("userRole", data.user.role);
+
+
+    // go to dashboard
+    navigate("/app");
+
+  } catch (error) {
+    setErrors({ general: error.message });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">
@@ -72,7 +89,7 @@ export default function Login() {
         </button>
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-4">
-            <LogIn className="w-8 h-8 text-white" />
+            <LogIn className="w-8 h-8 text-primary" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h2>
           <p className="text-gray-500">Sign in to your account to continue</p>
@@ -130,20 +147,7 @@ export default function Login() {
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="ml-2 text-sm text-gray-600">Remember me</span>
-            </label>
-            <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-              Forgot password?
-            </Link>
-          </div>
+         
 
           <button
             type="submit"
@@ -173,11 +177,7 @@ export default function Login() {
           </p>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-xs text-center text-gray-400">
-            Demo credentials: admin@gmail.com / 1234
-          </p>
-        </div>
+        
       </div>
     </div>
   );

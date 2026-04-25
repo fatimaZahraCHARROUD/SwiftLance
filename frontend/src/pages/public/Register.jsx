@@ -7,6 +7,7 @@ export default function Register() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    role: "developer",
     password: "",
     confirmPassword: ""
   });
@@ -46,34 +47,63 @@ export default function Register() {
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
-    
-    if (!agreeTerms) {
-      newErrors.agreeTerms = "You must agree to the terms and conditions";
-    }
+ 
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      // Store user info (replace with actual API call)
-      localStorage.setItem("token", "logged-in");
-      localStorage.setItem("userName", formData.name);
-      
-      // Navigate to dashboard or login
-      navigate("/login");
-      
+ const handleRegister = async (e) => {
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+  setErrors({});
+
+  try {
+    const response = await fetch("http://localhost:5000/api/users/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullName: formData.name,
+        email: formData.email,
+        role: formData.role,
+        password: formData.password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setErrors({
+        general: data.message || "Registration failed",
+      });
       setIsLoading(false);
-    }, 1000);
-  };
+      return;
+    }
+
+    // save token from backend
+    localStorage.setItem("token", data.token);
+
+    // optional user info
+    localStorage.setItem("userName", data.user.fullName);
+    localStorage.setItem("userEmail", data.user.email);
+    localStorage.setItem("userRole", data.user.role);
+
+    // redirect to dashboard مباشرة
+    navigate("/app");
+
+  } catch (error) {
+    setErrors({
+      general: "Server error. Please try again.",
+    });
+  }
+
+  setIsLoading(false);
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -120,7 +150,7 @@ export default function Register() {
             </button>
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-4">
-            <UserPlus className="w-8 h-8 text-white" />
+            <UserPlus className="w-8 h-8 text-primary" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Create an account</h2>
           <p className="text-gray-500">Join thousands of freelancers using SwiftLance</p>
@@ -165,6 +195,26 @@ export default function Register() {
             {errors.email && (
               <p className="mt-1 text-xs text-red-500">{errors.email}</p>
             )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Professional Role
+            </label>
+
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+            >
+              <option value="developer">Developer</option>
+              <option value="designer">Designer</option>
+              <option value="freelancer">Freelancer</option>
+              <option value="project_manager">Project Manager</option>
+              <option value="marketer">Marketer</option>
+              <option value="agency_owner">Agency Owner</option>
+            </select>
           </div>
 
           <div>
@@ -239,24 +289,7 @@ export default function Register() {
             )}
           </div>
 
-          <div className="flex items-start">
-            <input
-              type="checkbox"
-              checked={agreeTerms}
-              onChange={(e) => setAgreeTerms(e.target.checked)}
-              className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label className="ml-2 text-sm text-gray-600">
-              I agree to the{" "}
-              <Link to="/terms" className="text-blue-600 hover:text-blue-700">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link to="/privacy" className="text-blue-600 hover:text-blue-700">
-                Privacy Policy
-              </Link>
-            </label>
-          </div>
+          
           {errors.agreeTerms && (
             <p className="text-xs text-red-500">{errors.agreeTerms}</p>
           )}
@@ -264,7 +297,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-gradient-primary from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -279,6 +312,12 @@ export default function Register() {
             )}
           </button>
         </form>
+
+        {errors.general && (
+        <p className="text-sm text-red-500 text-center">
+          {errors.general}
+        </p>
+      )}
 
         <div className="mt-6 text-center">
           <p className="text-gray-600">
