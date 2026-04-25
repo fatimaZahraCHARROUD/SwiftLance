@@ -7,10 +7,8 @@ import {
   ChevronLeft, ChevronRight 
 } from 'lucide-react'; 
 
-function Sidebar() {
-  const navigate = useNavigate();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
+function Sidebar({ isCollapsed, setIsCollapsed }) {  const navigate = useNavigate();
+ 
   const getStyle = ({ isActive }) => {
     let base = styles.link;
     if (isActive) base += ` ${styles.active}`;
@@ -70,7 +68,7 @@ function Sidebar() {
 
       {/* Footer Section */}
       <div className={`pt-6 border-t border-white/5 ${isCollapsed ? 'flex justify-center' : ''}`}>
-        <button onClick={() => navigate('/login')} className={styles.logoutBtn}>
+        <button onClick={() => navigate('/')} className={styles.logoutBtn}>
            <LogOut size={20} /> {!isCollapsed && <span>Se déconnecter</span>}
         </button>
       </div>

@@ -38,10 +38,9 @@ function Navbar() {
                   {item.name}
                 </a>
               ))}
-              <button className="text-gray-600 hover:text-gray-900 transition-colors" onClick={()=>navigate('/login')}>
-                Log in
-              </button>
-              <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg hover:shadow-lg transition-all" onClick={()=>navigate('/register')}>
+              
+              <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg hover:shadow-lg transition-all" 
+              onClick={()=>navigate('/login')}>
                 Get Started
               </button>
             </div>
@@ -72,10 +71,9 @@ function Navbar() {
                   {item.name}
                 </a>
               ))}
-              <button className="block w-full text-left py-2 text-gray-600 hover:text-gray-900">
-                Log in
-              </button>
-              <button className="w-full mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg">
+              
+              <button className="w-full mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg"
+              onClick={()=>navigate('/login')}>
                 Get Started
               </button>
             </div>

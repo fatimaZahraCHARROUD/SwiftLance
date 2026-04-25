@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 function Hautpage() {
   return (
-    <div className="h-20 bg-[#0f1016] flex items-center justify-between px-8 text-white">
+    <div className="h-20 bg-[#ffffff] flex items-center justify-between px-8 text-white">
       
       <div className="flex flex-col">
       

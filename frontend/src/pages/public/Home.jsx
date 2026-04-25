@@ -1,7 +1,7 @@
 // Home.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link} from "react-router-dom";
-
+import "./public.css";
 import { 
   Menu,
   X, 
@@ -38,7 +38,7 @@ const Navbar =() =>{
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <span className="text-2xl font-bold text-blue-600">
                   SwiftLance
                 </span>
               </div>
@@ -55,10 +55,9 @@ const Navbar =() =>{
                   {item.name}
                 </a>
               ))}
-              <button className="text-gray-600 hover:text-gray-900 transition-colors" onClick={()=>navigate('/login')}>
-                Log in
-              </button>
-              <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg hover:shadow-lg transition-all" onClick={()=>navigate('/register')}>
+              
+              <button className="bg-gradient-primary text-white px-5 py-2 rounded-lg hover:shadow-lg transition-all"
+              onClick={()=>navigate('/login')}>
                 Get Started
               </button>
             </div>
@@ -89,10 +88,9 @@ const Navbar =() =>{
                   {item.name}
                 </a>
               ))}
-              <button className="block w-full text-left py-2 text-gray-600 hover:text-gray-900">
-                Log in
-              </button>
-              <button className="w-full mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg">
+            
+              <button className="w-full mt-2 bg-gradient-primary text-white px-5 py-2 rounded-lg"
+              onClick={()=>navigate('/login')}>
                 Get Started
               </button>
             </div>
@@ -199,7 +197,7 @@ const Home = () => {
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-4">
                 Manage clients, projects and tasks in{' '}
-                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <span className="text-primary bg-clip-text text-transparent">
                   one smart dashboard
                 </span>
               </h1>
@@ -207,9 +205,24 @@ const Home = () => {
                 Save time, organize your freelance work, and get paid faster. Stop juggling multiple tools — everything you need is here.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                <button className="bg-gradient-primary text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2">
                   🚀 Get Started Free
-                  <ArrowRight size={18} />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-arrow-right"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path>
+                  </svg>
                 </button>
                 <button className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-gray-400 transition-colors">
                   🔐 Live Demo
@@ -329,9 +342,9 @@ const Home = () => {
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               SwiftLance brings everything into{' '}
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                one simple dashboard
-              </span>
+             <span className="text-2xl font-bold text-primary bg-clip-text text-transparent inline-block">
+              one simple dashboard
+            </span>
             </h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -459,26 +472,49 @@ const Home = () => {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
+     <section className="py-20 bg-gradient-primary">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Stop managing chaos. Start managing growth.
           </h2>
+
           <p className="text-xl text-blue-100 mb-8">
             Join thousands of freelancers who have transformed their workflow with SwiftLance.
           </p>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
             <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2">
               🚀 Get Started Free
-              <ArrowRight size={18} />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-arrow-right"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
             </button>
+
             <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
               🔐 Login Now
             </button>
+
           </div>
+
           <p className="text-blue-100 text-sm mt-6">
             No credit card required • 14-day free trial • Cancel anytime
           </p>
+
         </div>
       </section>
 
@@ -490,7 +526,7 @@ const Home = () => {
 
       {/* Brand */}
       <div>
-        <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+        <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 text-gradient inline-block">
           SwiftLance
         </span>
         <p className="mt-3 text-sm text-gray-400">

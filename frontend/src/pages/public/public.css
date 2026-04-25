@@ -1,0 +1,23 @@
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --indigo: #4f46e5;
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(to right, var(--primary), var(--indigo));
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--primary), var(--indigo));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

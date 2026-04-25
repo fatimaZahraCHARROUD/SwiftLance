@@ -11,6 +11,7 @@ import Register from "./pages/public/Register";
 // Dashboard pages
 import Dashboard from "./pages/dashboard/Dashboard";
 import Clients from "./pages/dashboard/Clients";
+import Setting from "./pages/dashboard/Settings";
 import Projects from "./pages/dashboard/Projects";
 import Paiment from "./pages/dashboard/Paiment";
 import  Note from "./pages/dashboard/Note";
@@ -48,6 +49,7 @@ function App() {
           <Route path="projects" element={<Projects />} />
           
           <Route path="note" element={<Note />} />
+          <Route path="settings" element={<Setting />} />
           <Route path="paiment" element={<Paiment />} />
           <Route path="planning" element={<Planning />} />
           <Route path="tasks" element={<Tasks />} />
