@@ -1,0 +1,32 @@
+const noteService = require('./note.services');
+
+exports.addNote = async (req, res) => {
+    try {
+        // user_id vient de ton auth.middleware.js (req.user.id)
+        const noteData = { ...req.body, user_id: req.user.id };
+        const note = await noteService.createNote(noteData);
+        res.status(201).json(note);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur lors de l'ajout de la note", error: error.message });
+    }
+};
+
+exports.getProjectNotes = async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        const notes = await noteService.getNotesByProject(projectId, req.user.id);
+        res.status(200).json(notes);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur de récupération", error: error.message });
+    }
+};
+
+exports.removeNote = async (req, res) => {
+    try {
+        const deletedNote = await noteService.deleteNote(req.params.id, req.user.id);
+        if (!deletedNote) return res.status(404).json({ message: "Note non trouvée" });
+        res.status(200).json({ message: "Note supprimée avec succès" });
+    } catch (error) {
+        res.status(500).json({ message: "Erreur de suppression", error: error.message });
+    }
+};
