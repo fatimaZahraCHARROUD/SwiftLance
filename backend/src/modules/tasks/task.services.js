@@ -1,26 +1,22 @@
 const Task = require('./task.model');
 
-// Créer une nouvelle tâche
-exports.createTask = async (taskData) => {
-    const task = new Task(taskData);
-    return await task.save();
+exports.createTask = async (data, userId) => {
+    
+    return await Task.create({ ...data, user_id: userId });
 };
 
-// Récupérer les tâches d'un projet spécifique pour un utilisateur donné
-exports.getTasksByProject = async (projectId, userId) => {
-    return await Task.find({ projectId, user_id: userId });
+exports.getAllTasks = async (userId) => {
+    return await Task.find({ user_id: userId }).populate('projectId', 'name');
 };
 
-// Mettre à jour une tâche (ex: changer le statut ou les heures estimées)
-exports.updateTask = async (taskId, userId, updateData) => {
+exports.updateTask = async (id, data, userId) => {
     return await Task.findOneAndUpdate(
-        { _id: taskId, user_id: userId },
-        updateData,
+        { _id: id, user_id: userId },
+        data,
         { new: true }
     );
 };
 
-// Supprimer une tâche
-exports.deleteTask = async (taskId, userId) => {
-    return await Task.findOneAndDelete({ _id: taskId, user_id: userId });
+exports.deleteTask = async (id, userId) => {
+    return await Task.findOneAndDelete({ _id: id, user_id: userId });
 };

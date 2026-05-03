@@ -4,9 +4,9 @@ const router = express.Router();
 const clientController = require('./client.controller');
 const auth = require('../../middleware/auth.middleware');
 
-router.get('/', clientController.getClients);      
-router.post('/', clientController.addClient);    
-router.put('/:id', clientController.modifyClient); 
-router.delete('/:id', clientController.removeClient);
+router.get('/', auth, clientController.getClients);       
+router.post('/', auth, clientController.addClient);  
+router.put('/:id', auth, clientController.modifyClient); 
+router.delete('/:id', auth, clientController.removeClient);
 
 module.exports = router;

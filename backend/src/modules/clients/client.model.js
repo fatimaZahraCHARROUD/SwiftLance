@@ -6,6 +6,12 @@ const ClientSchema = new mongoose.Schema({
     phone: { type: String },
     type: { type: String },
     address: { type: String },
+    createdBy: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
+    // --------------------------------------------
     createdAt: { type: Date, default: Date.now }
 });
 
