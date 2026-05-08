@@ -30,3 +30,12 @@ exports.removeNote = async (req, res) => {
         res.status(500).json({ message: "Erreur de suppression", error: error.message });
     }
 };
+exports.getNotes = async (req, res) => {
+    try {
+        
+        const notes = await noteService.getAllUserNotes(req.user.id); 
+        res.status(200).json(notes);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur de récupération", error: error.message });
+    }
+};
