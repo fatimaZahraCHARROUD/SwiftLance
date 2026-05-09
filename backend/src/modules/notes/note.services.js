@@ -24,3 +24,9 @@ exports.updateNote = async (noteId, userId, updateData) => {
         { new: true }
     );
 };
+exports.getAllUserNotes = async (userId) => {
+    return await Note.find({ user_id: userId }).populate('projectId', 'name');
+};
+
+
+
