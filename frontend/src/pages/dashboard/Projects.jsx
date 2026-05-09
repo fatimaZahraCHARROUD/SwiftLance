@@ -1,45 +1,512 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { Pencil, Trash2, Plus, X, Info } from "lucide-react";
+
+const API_URL = "http://localhost:5000/api/projects";
+const CLIENTS_URL = "http://localhost:5000/api/clients";
+const NOTES_URL = "http://localhost:5000/api/notes";
+const TASKS_URL = "http://localhost:5000/api/tasks";
 
 function Projects() {
-  const projects = [
-    { id: 1, name: "E-app", client: "Sami", progress: 40 },
-    { id: 2, name: "Web Portfolio", client: "Meryem", progress: 100 }
-  ];
+  const [projects, setProjects] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [filter, setFilter] = useState("all");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+ 
+  const [detailsOpen, setDetailsOpen] = useState(false);
+const [selectedProject, setSelectedProject] = useState(null);
+
+const [projectNotes, setProjectNotes] = useState([]);
+const [projectTasks, setProjectTasks] = useState([]);
+
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    status: "planning",
+    budget: 0,
+    startDate: "",
+    endDate: "",
+    client: "",
+  });
+
+  // ================= FETCH =================
+  const fetchProjects = async () => {
+    const res = await fetch(API_URL, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    const data = await res.json();
+    setProjects(data);
+  };
+
+  const fetchClients = async () => {
+    const res = await fetch(CLIENTS_URL, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    const data = await res.json();
+    setClients(data);
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      await fetchProjects();
+      await fetchClients();
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  // ================= FORM =================
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // ================= RESET =================
+  const resetForm = () => {
+    setForm({
+      title: "",
+      description: "",
+      status: "planning",
+      budget: 0,
+      startDate: "",
+      endDate: "",
+      client: "",
+    });
+  };
+
+  // ================= ADD =================
+  const openAdd = () => {
+    resetForm();
+    setEditMode(false);
+    setIsModalOpen(true);
+  };
+
+  // ================= EDIT =================
+  const openEdit = (p,id) => {
+    console.log(p._id);
+    setForm({
+      title: p.title,
+      description: p.description,
+      status: p.status,
+      budget: p.budget,
+      startDate: p.startDate?.split("T")[0] || "",
+      endDate: p.endDate?.split("T")[0] || "",
+      client: p.client?._id || "",
+    });
+
+    setSelectedId(p._id);
+    setEditMode(true);
+    setIsModalOpen(true);
+  };
+
+// ================= INFO =================
+  const openInfo = async (project) => {
+
+    setSelectedProject(project);
+
+    try {
+
+      // ===== FETCH NOTES =====
+      const notesRes = await fetch(
+        `${NOTES_URL}/project/${project._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const notesData = await notesRes.json();
+
+      // ===== FETCH TASKS =====
+      const tasksRes = await fetch(TASKS_URL, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const tasksData = await tasksRes.json();
+
+      // FILTER TASKS OF THIS PROJECT
+      const filteredTasks = tasksData.filter(
+        (task) => task.projectId?._id === project._id
+      );
+
+      setProjectNotes(notesData);
+      setProjectTasks(filteredTasks);
+
+      setDetailsOpen(true);
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  // ================= CREATE =================
+  const createProject = async () => {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(form),
+    });
+
+    setIsModalOpen(false);
+    resetForm();
+    fetchProjects();
+  };
+
+  // ================= UPDATE (FIXED) =================
+  const updateProject = async () => {
+    await fetch(`${API_URL}/${selectedId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(form),
+    });
+
+    setIsModalOpen(false);
+    setEditMode(false);
+    setSelectedId(null);
+    resetForm();
+    fetchProjects(); // 🔥 IMPORTANT FIX
+  };
+
+  // ================= DELETE =================
+  const deleteProject = async (id) => {
+    if (!confirm("Delete this project?")) return;
+
+    await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    fetchProjects();
+  };
+
+  // ================= FILTER =================
+  const filteredProjects =
+    filter === "all"
+      ? projects
+      : projects.filter((p) => p.status === filter);
+
+  // ================= BADGE =================
+  const statusBadge = (status) => {
+    const styles = {
+      planning: "bg-yellow-100 text-yellow-600",
+      in_progress: "bg-blue-100 text-blue-600",
+      done: "bg-green-100 text-green-600",
+    };
+
+    return (
+      <span className={`text-xs px-2 py-1 rounded-full ${styles[status]}`}>
+        {status}
+      </span>
+    );
+  };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-slate-800 mb-8">My Projects</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map(p => (
-          <div key={p.id} className="bg-white border border-slate-100 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
-            {p.progress < 100 && (
-              <div className="absolute top-4 right-4 bg-red-50 text-red-500 text-[10px] font-bold px-2 py-1 rounded-full border border-red-100">
-                ● PENDING
-              </div>
-            )}
-            
-            <h3 className="text-lg font-bold text-slate-800 mb-1 group-hover:text-[#3327db] transition-colors">{p.name}</h3>
-            <p className="text-sm text-slate-500 mb-6 italic">Client: {p.client || 'Unknown'}</p>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-semibold">
-                <span>Progress</span>
-                <span className={p.progress === 100 ? "text-green-500" : "text-blue-500"}>{p.progress}%</span>
-              </div>
-              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full transition-all duration-1000 ${p.progress === 100 ? 'bg-green-500' : 'bg-[#3327db]'}`}
-                  style={{ width: `${p.progress}%` }}
-                ></div>
-              </div>
-            </div>
-            
-            <button className="w-full mt-6 py-2 rounded-xl bg-slate-50 text-slate-600 font-semibold hover:bg-[#3327db] hover:text-white transition-all">
-              View Project
-            </button>
-          </div>
+    <div className="p-6">
+
+      {/* HEADER */}
+      <div className="flex justify-between mb-4">
+        <h2 className="text-2xl font-bold">Projects</h2>
+
+        <button
+          onClick={openAdd}
+          className="bg-[#3327db] text-white px-4 py-2 rounded-xl flex gap-2"
+        >
+          <Plus /> Add
+        </button>
+      </div>
+
+      {/* ================= TABS ================= */}
+      <div className="flex gap-3 mb-6">
+        {["all", "planning", "in_progress", "done"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setFilter(tab)}
+            className={`px-3 py-1 rounded-full text-sm border ${
+              filter === tab ? "bg-black text-white" : "bg-white"
+            }`}
+          >
+            {tab}
+          </button>
         ))}
       </div>
+
+      {/* ================= GRID ================= */}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProjects.map((p) => (
+            <div key={p._id} className="bg-white p-5 rounded-xl shadow relative">
+
+              {/* ACTIONS TOP RIGHT */}
+              <div className="absolute top-3 right-3 flex gap-2">
+                <button onClick={() => openEdit(p,p._id)}>
+                  <Pencil size={16} className="text-blue-500" />
+                </button>
+
+                <button onClick={() => deleteProject(p._id)}>
+                  <Trash2 size={16} className="text-red-500" />
+                </button>
+
+                <button onClick={() => openInfo(p)}>
+                  <Info size={16} className="text-gray-500" />
+                </button>
+              </div>
+
+              <h3 className="font-bold text-lg">{p.title}</h3>
+
+              <p className="text-sm text-gray-500">
+                Client: {p.client?.fullName || "N/A"}
+              </p>
+
+              <p className="text-xs text-gray-400 mt-2">
+                {p.description}
+              </p>
+
+              <p className="text-sm mt-2">💰 {p.budget} DH</p>
+
+              <p className="text-xs text-gray-400">
+                📅 {p.startDate?.split("T")[0]} → {p.endDate?.split("T")[0]}
+              </p>
+
+              <div className="mt-3">{statusBadge(p.status)}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ================= MODAL ================= */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+          <div className="bg-white w-[450px] p-6 rounded-xl relative">
+
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-3 right-3"
+            >
+              <X />
+            </button>
+
+            <h2 className="text-xl font-bold mb-4">
+              {editMode ? "Update" : "Add"} Project
+            </h2>
+
+            <input name="title" value={form.title} onChange={handleChange} className="w-full border p-2 mb-2" placeholder="Title" />
+
+            <textarea name="description" value={form.description} onChange={handleChange} className="w-full border p-2 mb-2" />
+
+            <select name="status" value={form.status} onChange={handleChange} className="w-full border p-2 mb-2">
+              <option value="planning">Planning</option>
+              <option value="in_progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+
+            <input type="number" name="budget" value={form.budget} onChange={handleChange} className="w-full border p-2 mb-2" />
+
+            <input type="date" name="startDate" value={form.startDate} onChange={handleChange} className="w-full border p-2 mb-2" />
+
+            <input type="date" name="endDate" value={form.endDate} onChange={handleChange} className="w-full border p-2 mb-2" />
+
+            <select name="client" value={form.client} onChange={handleChange} className="w-full border p-2 mb-4">
+              <option value="">Select Client</option>
+              {clients.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.fullName}
+                </option>
+              ))}
+            </select>
+
+            <button
+              onClick={editMode ? updateProject : createProject}
+              className="w-full bg-[#3327db] text-white py-2 rounded"
+            >
+              {editMode ? "Update" : "Create"}
+            </button>
+
+          </div>
+        </div>
+      )}
+
+
+      {/* ================= DETAILS MODAL ================= */}
+      {detailsOpen && selectedProject && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+
+          <div className="bg-white w-[700px] max-h-[90vh] overflow-y-auto p-6 rounded-2xl relative shadow-2xl">
+
+            {/* CLOSE */}
+            <button
+              onClick={() => setDetailsOpen(false)}
+              className="absolute top-4 right-4"
+            >
+              <X />
+            </button>
+
+            {/* TITLE */}
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-slate-800">
+                {selectedProject.title}
+              </h2>
+
+              <div className="mt-2">
+                {statusBadge(selectedProject.status)}
+              </div>
+            </div>
+
+            {/* PROJECT INFO */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+
+              <div className="bg-slate-50 p-4 rounded-xl">
+                <p className="text-xs text-gray-400">Client</p>
+
+                <p className="font-semibold">
+                  {selectedProject.client?.fullName || "N/A"}
+                </p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-xl">
+                <p className="text-xs text-gray-400">Budget</p>
+
+                <p className="font-semibold">
+                  {selectedProject.budget} DH
+                </p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-xl">
+                <p className="text-xs text-gray-400">Start Date</p>
+
+                <p className="font-semibold">
+                  {selectedProject.startDate?.split("T")[0] || "N/A"}
+                </p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-xl">
+                <p className="text-xs text-gray-400">Deadline</p>
+
+                <p className="font-semibold">
+                  {selectedProject.endDate?.split("T")[0] || "N/A"}
+                </p>
+              </div>
+
+            </div>
+
+            {/* DESCRIPTION */}
+            <div className="mb-6">
+              <h3 className="font-bold text-lg mb-2">
+                Description
+              </h3>
+
+              <div className="bg-slate-50 p-4 rounded-xl text-slate-700">
+                {selectedProject.description || "No description"}
+              </div>
+            </div>
+
+            {/* NOTES */}
+            <div className="mb-6">
+              <h3 className="font-bold text-lg mb-3">
+                Notes
+              </h3>
+
+              <div className="space-y-3">
+
+                {projectNotes.length > 0 ? (
+                  projectNotes.map((note) => (
+                    <div
+                      key={note._id}
+                      className="bg-yellow-50 border border-yellow-100 p-4 rounded-xl"
+                    >
+                      <h4 className="font-semibold">
+                        {note.title}
+                      </h4>
+
+                      <p className="text-sm text-slate-600 mt-1">
+                        {note.content}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-sm">
+                    No notes found.
+                  </p>
+                )}
+
+              </div>
+            </div>
+
+            {/* TASKS */}
+            <div>
+              <h3 className="font-bold text-lg mb-3">
+                Tasks
+              </h3>
+
+              <div className="space-y-3">
+
+                {projectTasks.length > 0 ? (
+                  projectTasks.map((task) => (
+                    <div
+                      key={task._id}
+                      className="bg-blue-50 border border-blue-100 p-4 rounded-xl"
+                    >
+                      <div className="flex justify-between items-center">
+
+                        <h4 className="font-semibold">
+                          {task.title}
+                        </h4>
+
+                        <span className="text-xs px-2 py-1 rounded-full bg-white">
+                          {task.status}
+                        </span>
+
+                      </div>
+
+                      <p className="text-sm text-slate-600 mt-1">
+                        {task.description}
+                      </p>
+
+                      <div className="flex gap-3 mt-3 text-xs text-gray-500">
+
+                        <span>
+                          Priority: {task.priority}
+                        </span>
+
+                        <span>
+                          Due: {task.dueDate?.split("T")[0] || "N/A"}
+                        </span>
+
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-sm">
+                    No tasks found.
+                  </p>
+                )}
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

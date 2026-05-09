@@ -18,7 +18,7 @@ const projectSchema = new mongoose.Schema(
 
     client: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Client",
     },
 
     createdBy: {
