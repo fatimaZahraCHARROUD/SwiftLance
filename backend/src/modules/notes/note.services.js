@@ -14,12 +14,13 @@ exports.deleteNote = async (noteId, userId) => {
 };
 
 exports.updateNote = async (noteId, userId, updateData) => {
-    return await Note.findOneAndUpdate(
-        { _id: noteId, user_id: userId },
-        updateData,
-        { new: true }
-    );
+  return await Note.findOneAndUpdate(
+    { _id: noteId, user_id: userId },
+    updateData,
+    { returnDocument: "after" }
+  );
 };
+
 exports.getAllUserNotes = async (userId) => {
     return await Note.find({ user_id: userId }).populate('projectId', 'name');
 };
