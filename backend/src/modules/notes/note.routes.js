@@ -5,12 +5,14 @@ const auth = require('../../middleware/auth.middleware');
 
 router.use(auth);
 
-// --- ZIDI HAD L-STER (Hwa li khass l-Frontend dyalk) ---
 router.get('/', noteController.getNotes); 
 
-// Hadu dyalk li kanti dayra
-router.post('/', noteController.addNote);
+router.post('/', noteController.addNote); 
+
+router.put('/:id', noteController.updateNote);
+
 router.get('/project/:projectId', noteController.getProjectNotes);
+
 router.delete('/:id', noteController.removeNote);
 
 module.exports = router;

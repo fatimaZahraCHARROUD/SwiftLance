@@ -1,34 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Plus, Notebook, Trash2, Calendar, Search, ArrowRight, BookOpen, Clock3 } from 'lucide-react';
+import { 
+  Plus, Notebook, Trash2, Search, Edit3, X, Eye 
+} from 'lucide-react';
 
 export default function Note() {
   const [notes, setNotes] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState(null);
+  const [viewingNote, setViewingNote] = useState(null); 
   const [searchTerm, setSearchTerm] = useState("");
 
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    projectId: ''
+    title: '', content: '', projectId: ''
   });
 
-  // 1. Function bach n-jibou l-data
+  // 1. Fetch Data: Kan-jibou l-projects o l-notes
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      
-      const resProjects = await axios.get('http://localhost:5000/api/projects', config);
-      setProjects(resProjects.data);
+      const headers = { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
 
-      const resNotes = await axios.get('http://localhost:5000/api/notes', config);
-      setNotes(resNotes.data);
+      const [resProjects, resNotes] = await Promise.all([
+        fetch('http://localhost:5000/api/projects', { headers }),
+        fetch('http://localhost:5000/api/notes', { headers }) 
+      ]);
 
+      if (resProjects.ok && resNotes.ok) {
+        const projectsData = await resProjects.json();
+        const notesData = await resNotes.json();
+        setProjects(projectsData);
+        setNotes(notesData);
+      }
     } catch (err) {
-      console.error("Erreur f Note.jsx:", err.response?.data || err.message);
+      console.error("Erreur de chargement:", err);
     } finally {
       setLoading(false);
     }
@@ -36,34 +45,65 @@ export default function Note() {
 
   useEffect(() => { fetchData(); }, []);
 
-  // 2. Save Note
+  // 2. Submit: Hna fin t-fixat l-mushkila dyal l-Add
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+    
+    // T-كد bli l-URL hwa /api/notes/ (machi ghir /api)
+    const url = editingNote 
+      ? `http://localhost:5000/api/notes/${editingNote._id}` 
+      : 'http://localhost:5000/api/notes';
+    
+    const method = editingNote ? 'PUT' : 'POST';
+
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/notes', formData, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
       });
-      await fetchData(); // Refresh automatyco
-      setIsModalOpen(false);
-      setFormData({ title: '', content: '', projectId: '' });
+
+      if (response.ok) {
+        setIsModalOpen(false);
+        setEditingNote(null);
+        setFormData({ title: '', content: '', projectId: '' });
+        fetchData(); // Refresh l-list
+      } else {
+        const errorData = await response.json();
+        alert("Erreur backend: " + (errorData.message || "Erreur de validation"));
+      }
     } catch (err) {
-      alert("Error saving note");
+      alert("Erreur réseau: Checki CORS f server.js o t-أkd bli l-auth kheddam");
     }
   };
 
   const deleteNote = async (id) => {
-    if (window.confirm("Bghiti tms7 had l-note?")) {
+    if (window.confirm("Voulez-vous vraiment supprimer cette note ?")) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/api/notes/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const response = await fetch(`http://localhost:5000/api/notes/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
         });
-        fetchData(); 
+        if (response.ok) fetchData();
       } catch (err) {
-        console.error("Delete error:", err);
+        alert("Erreur réseau lors de la suppression");
       }
     }
+  };
+
+  const handleEdit = (note) => {
+    setEditingNote(note);
+    setFormData({ 
+      title: note.title, 
+      content: note.content, 
+      projectId: note.projectId?._id || note.projectId
+    });
+    setIsModalOpen(true);
   };
 
   const filteredNotes = notes.filter(n => 
@@ -71,145 +111,137 @@ export default function Note() {
   );
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#fdfaf5]">
-       <div className="animate-pulse text-[#f97316] font-bold text-xl">Loading Creative Space...</div>
+    <div className="min-h-screen flex items-center justify-center bg-[#fcfcfd]">
+       <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600"></div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#fdfaf5] p-6 md:p-12 font-sans">
-      <div className="max-w-7xl mx-auto">
-        
-        {/* --- Header Section (Kima chfti f l-Mac) --- */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-               <div className="h-1 w-10 bg-[#f97316] rounded-full"></div>
-               <span className="text-[#fdba74] font-bold uppercase text-[12px] tracking-[0.25em]">Creative Canvas</span>
-            </div>
-            <h2 className="text-5xl font-extrabold text-[#1f2937] tracking-tighter">My <span className="text-[#f97316]">Notes</span></h2>
-          </div>
+    <div className="min-h-screen bg-[#fcfcfd] font-sans pb-12 pt-8">
+      {/* Search o Button Add */}
+      <div className="px-12 mb-10 flex justify-between items-center gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
+          <input 
+            type="text" placeholder="Rechercher des notes..." 
+            className="w-full pl-16 pr-8 py-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 shadow-sm transition-all"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <button 
+          onClick={() => { setEditingNote(null); setFormData({title:'', content:'', projectId:''}); setIsModalOpen(true); }}
+          className="bg-[#4f46e5] hover:bg-[#4338ca] text-white px-10 py-4 rounded-2xl font-bold flex items-center gap-3 shadow-xl active:scale-95 transition-all"
+        >
+          <Plus size={22} strokeWidth={3} /> Ajouter une note
+        </button>
+      </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <div className="relative group">
-               <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#fdba74] group-focus-within:text-[#f97316] transition-colors" size={20} />
-               <input 
-                 type="text" placeholder="Search ideas..."
-                 className="pl-14 pr-6 py-4 rounded-[2rem] bg-white border border-slate-100 shadow-[0_10px_35px_-10px_rgba(249,115,22,0.05)] outline-none focus:border-[#ffedd5] focus:ring-4 focus:ring-[#f97316]/5 w-full sm:w-80 transition-all placeholder:text-slate-300"
-                 onChange={(e) => setSearchTerm(e.target.value)}
-               />
+      {/* Table Section */}
+      <div className="px-12">
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] shadow-sm overflow-hidden">
+          <table className="w-full text-left">
+            <thead className="bg-[#f8fafc]/50">
+              <tr className="border-b border-slate-50">
+                <th className="px-10 py-6 text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Titre</th>
+                <th className="px-6 py-6 text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Projet</th>
+                <th className="px-6 py-6 text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Aperçu</th>
+                <th className="px-10 py-6 text-[11px] font-black uppercase text-slate-300 tracking-[0.2em] text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {filteredNotes.map(note => (
+                <tr key={note._id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td className="px-10 py-7">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-500">
+                        <Notebook size={20} />
+                      </div>
+                      <span className="font-bold text-slate-700 text-lg">{note.title}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-7">
+                    <span className="px-4 py-1.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase rounded-lg">
+                      {projects.find(p => p._id === (note.projectId?._id || note.projectId))?.title || "Général"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-7 text-slate-400 text-sm italic max-w-xs truncate">
+                    {note.content}
+                  </td>
+                  <td className="px-10 py-7 text-right">
+                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                      {/* Bouton Affichage Description */}
+                      <button onClick={() => setViewingNote(note)} className="p-3 text-emerald-500 hover:bg-emerald-50 rounded-xl transition-all">
+                        <Eye size={18} />
+                      </button>
+                      <button onClick={() => handleEdit(note)} className="p-3 text-indigo-500 hover:bg-indigo-50 rounded-xl transition-all">
+                        <Edit3 size={18} />
+                      </button>
+                      <button onClick={() => deleteNote(note._id)} className="p-3 text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Modal Add / Edit */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="bg-white rounded-[3.5rem] w-full max-w-xl p-12 shadow-2xl relative animate-in zoom-in-95">
+            <button onClick={() => setIsModalOpen(false)} className="absolute top-10 right-10 text-slate-300 hover:text-red-500">
+              <X size={24}/>
+            </button>
+            <h3 className="text-3xl font-black text-slate-900 mb-10">
+              {editingNote ? 'Modifier' : 'Nouvelle'} <span className="text-indigo-600">Note</span>
+            </h3>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <input 
+                type="text" placeholder="Titre..." required
+                className="w-full p-5 bg-slate-50 border-none rounded-2xl font-bold outline-none"
+                value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})}
+              />
+              <select 
+                required className="w-full p-5 bg-slate-50 border-none rounded-2xl font-bold outline-none"
+                value={formData.projectId} onChange={(e) => setFormData({...formData, projectId: e.target.value})}
+              >
+                <option value="">Sélectionner un projet</option>
+                {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
+              </select>
+              <textarea 
+                placeholder="Description..." required
+                className="w-full p-5 bg-slate-50 border-none rounded-2xl h-44 resize-none font-bold outline-none"
+                value={formData.content} onChange={(e) => setFormData({...formData, content: e.target.value})}
+              />
+              <button type="submit" className="w-full py-6 bg-[#4f46e5] text-white rounded-[2rem] font-black text-lg hover:bg-indigo-700 transition-all">
+                {editingNote ? 'Mettre à jour' : 'Enregistrer'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Modal (Description) */}
+      {viewingNote && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="bg-white rounded-[3.5rem] w-full max-w-xl p-12 shadow-2xl relative">
+            <button onClick={() => setViewingNote(null)} className="absolute top-10 right-10 text-slate-300">
+              <X size={24}/>
+            </button>
+            <h3 className="text-3xl font-black mb-6">{viewingNote.title}</h3>
+            <div className="bg-slate-50 p-8 rounded-3xl min-h-[200px]">
+              <p className="text-slate-700 whitespace-pre-wrap font-medium">{viewingNote.content}</p>
             </div>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-[#f97316] hover:bg-[#ea580c] text-white px-10 py-4 rounded-[2rem] flex items-center justify-center gap-3 shadow-[0_15px_40px_-10px_rgba(249,115,22,0.4)] hover:shadow-[0_18px_50px_-10px_rgba(249,115,22,0.5)] hover:-translate-y-1 transition-all active:scale-95"
-            >
-              <Plus size={22} strokeWidth={3} /> <span className="font-extrabold tracking-wide">New Thought</span>
+            <button onClick={() => setViewingNote(null)} className="mt-8 w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black">
+              Fermer
             </button>
           </div>
         </div>
-
-        {/* --- Notes Grid --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {filteredNotes.length > 0 ? filteredNotes.map(note => (
-            <div key={note._id} className="bg-white p-9 rounded-[3rem] shadow-[0_15px_50px_-15px_rgba(0,0,0,0.03)] border-2 border-white hover:border-[#ffedd5] transition-all duration-500 hover:shadow-[0_20px_60px_-10px_rgba(249,115,22,0.07)] group overflow-hidden">
-              <div className="flex items-center gap-3 mb-7">
-                <div className="p-4 bg-[#fff7ed] rounded-[1.5rem] text-[#f97316]">
-                  <Notebook size={24} />
-                </div>
-                <div className="h-1.5 w-1.5 bg-slate-200 rounded-full"></div>
-                <span className="text-[11px] font-bold uppercase text-slate-400 tracking-[0.2em]">
-                  {projects.find(p => p._id === note.projectId)?.title || "General Idea"}
-                </span>
-              </div>
-
-              <h4 className="font-extrabold text-[#1f2937] text-2xl mb-5 group-hover:text-[#f97316] transition-colors leading-snug">{note.title}</h4>
-              <p className="text-slate-500 text-[15px] mb-10 leading-relaxed line-clamp-5 font-medium opacity-85">{note.content}</p>
-              
-              <div className="pt-7 border-t border-[#fff7ed] flex justify-between items-center">
-                 <div className="flex items-center gap-3 text-slate-400">
-                    <Clock3 size={16} className="text-[#f97316]/60"/> 
-                    <span className="text-[13px] font-bold">{new Date(note.createdAt).toLocaleDateString()}</span>
-                 </div>
-                 <div className="flex gap-2">
-                    <button 
-                      onClick={() => deleteNote(note._id)}
-                      className="p-3.5 bg-white hover:bg-red-50 rounded-2xl text-slate-200 hover:text-red-500 shadow-inner border border-slate-50 transition-all hover:scale-110"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                    <button className="p-3.5 bg-[#f97316]/5 rounded-2xl text-[#f97316] hover:bg-[#f97316] hover:text-white transition-colors">
-                      <ArrowRight size={18} />
-                    </button>
-                 </div>
-              </div>
-            </div>
-          )) : (
-            <div className="col-span-full text-center py-32 bg-white rounded-[4rem] border-4 border-dashed border-[#ffedd5]">
-               <div className="bg-[#fff7ed] inline-block p-7 rounded-full shadow-lg mb-8 text-[#f97316]">
-                  <BookOpen size={52} strokeWidth={1} />
-               </div>
-               <p className="text-[#1f2937] font-black text-2xl">Your canvas is fresh and empty.</p>
-               <p className="text-[#fdba74] font-medium mt-3">Click "New Thought" to write your next big idea.</p>
-            </div>
-          )}
-        </div>
-
-        {/* --- Modal Design (Limouni style) --- */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-[#1f2937]/15 backdrop-blur-xl z-50 flex items-center justify-center p-5">
-            <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-xl p-12 relative overflow-hidden animate-in zoom-in-95 duration-300">
-              <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-[#f97316] to-[#fdba74]"></div>
-              
-              <h3 className="text-3xl font-extrabold text-[#1f2937] mb-10 flex items-center gap-3">
-                New <span className="text-[#f97316]">Thought</span>
-              </h3>
-
-              <form onSubmit={handleSubmit} className="space-y-7">
-                <div className="space-y-2">
-                  <label className="text-[12px] font-black uppercase text-[#fdba74] ml-2">Note Title</label>
-                  <input 
-                    type="text" required placeholder="Give it a fresh name..."
-                    className="w-full p-6 rounded-2xl border border-transparent bg-[#fcf9f5] outline-none focus:border-[#ffedd5] focus:ring-4 focus:ring-[#f97316]/5 transition-all text-lg"
-                    value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[12px] font-black uppercase text-[#fdba74] ml-2">Select Project</label>
-                  <select 
-                    required className="w-full p-6 rounded-2xl border border-transparent bg-[#fcf9f5] outline-none focus:border-[#ffedd5] focus:ring-4 focus:ring-[#f97316]/5 transition-all appearance-none text-lg text-slate-500"
-                    value={formData.projectId}
-                    onChange={(e) => setFormData({...formData, projectId: e.target.value})}
-                  >
-                    <option value="">Choose a linked project</option>
-                    {projects.map(p => (
-                      <option key={p._id} value={p._id}>{p.title}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[12px] font-black uppercase text-[#fdba74] ml-2">Content Details</label>
-                  <textarea 
-                    required placeholder="Spill your ideas here..."
-                    className="w-full p-6 rounded-2xl border border-transparent bg-[#fcf9f5] h-44 resize-none outline-none focus:border-[#ffedd5] focus:ring-4 focus:ring-[#f97316]/5 transition-all text-lg"
-                    value={formData.content}
-                    onChange={(e) => setFormData({...formData, content: e.target.value})}
-                  />
-                </div>
-
-                <div className="flex gap-5 pt-6">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 font-extrabold text-slate-300 hover:text-[#1f2937] transition-colors">Dismiss</button>
-                  <button type="submit" className="flex-[2] py-5 bg-[#f97316] text-white rounded-[1.5rem] font-extrabold shadow-lg shadow-[#f97316]/30 hover:bg-[#ea580c] transition-all active:scale-95 text-lg">
-                    Save Note
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
