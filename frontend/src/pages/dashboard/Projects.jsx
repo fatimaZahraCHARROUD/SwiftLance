@@ -23,6 +23,8 @@ const [selectedProject, setSelectedProject] = useState(null);
 const [projectNotes, setProjectNotes] = useState([]);
 const [projectTasks, setProjectTasks] = useState([]);
 
+const [expandedNote, setExpandedNote] = useState(null);
+
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -149,6 +151,34 @@ const [projectTasks, setProjectTasks] = useState([]);
       console.log(err);
     }
   };
+
+  const toggleTaskStatus = async (task) => {
+  await fetch(`${TASKS_URL}/${task._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({
+      ...task,
+      status: task.status === "done" ? "in_progress" : "done",
+    }),
+  });
+
+  openInfo(selectedProject); // refresh details
+};
+
+const deleteTask = async (id) => {
+  await fetch(`${TASKS_URL}/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  openInfo(selectedProject); // refresh details
+};
+
   // ================= CREATE =================
   const createProject = async () => {
     await fetch(API_URL, {
@@ -433,13 +463,24 @@ const [projectTasks, setProjectTasks] = useState([]);
                       key={note._id}
                       className="bg-yellow-50 border border-yellow-100 p-4 rounded-xl"
                     >
-                      <h4 className="font-semibold">
-                        {note.title}
-                      </h4>
+                      <div className="flex justify-between items-center">
+  <h4 className="font-semibold">{note.title}</h4>
 
-                      <p className="text-sm text-slate-600 mt-1">
-                        {note.content}
-                      </p>
+  <button
+    onClick={() =>
+      setExpandedNote(expandedNote === note._id ? null : note._id)
+    }
+    className="text-blue-500 text-xs"
+  >
+    Details
+  </button>
+</div>
+
+{expandedNote === note._id && (
+  <p className="text-sm text-gray-600 mt-2">
+    {note.content}
+  </p>
+)}
                     </div>
                   ))
                 ) : (
@@ -465,21 +506,44 @@ const [projectTasks, setProjectTasks] = useState([]);
                       key={task._id}
                       className="bg-blue-50 border border-blue-100 p-4 rounded-xl"
                     >
-                      <div className="flex justify-between items-center">
+                     <div className="flex justify-between items-center">
 
-                        <h4 className="font-semibold">
-                          {task.title}
-                        </h4>
+  {/* LEFT: checkbox + title */}
+  <label className="flex items-center gap-2">
+    <input
+      type="checkbox"
+      checked={task.status === "done"}
+      onChange={() => toggleTaskStatus(task)}
+    />
 
-                        <span className="text-xs px-2 py-1 rounded-full bg-white">
-                          {task.status}
-                        </span>
+    <span className={task.status === "done" ? "line-through" : ""}>
+      {task.title}
+    </span>
+  </label>
 
-                      </div>
+  {/* RIGHT: status + delete */}
+  <div className="flex items-center gap-2">
 
-                      <p className="text-sm text-slate-600 mt-1">
-                        {task.description}
-                      </p>
+    <span className="text-xs px-2 py-1 rounded-full bg-white">
+      {task.status}
+    </span>
+
+    <button
+       onClick={() => {
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      deleteTask(task._id);
+    }
+  }}
+      className="text-red-500 text-xs px-2 py-1 rounded-full hover:bg-red-100"
+    >
+      Delete
+    </button>
+
+  </div>
+
+</div>
+
+                      
 
                       <div className="flex gap-3 mt-3 text-xs text-gray-500">
 
