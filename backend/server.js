@@ -9,6 +9,7 @@ const projectRoutes = require("./src/modules/projects/project.routes");
 const noteRoutes = require("./src/modules/notes/note.routes"); 
 const clientRoutes = require("./src/modules/clients/client.routes"); 
 const taskRoutes = require("./src/modules/tasks/task.routes");     
+const planningRoutes = require("./src/modules/planning/planning.routes");
 
 const app = express(); 
 
@@ -25,6 +26,7 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/clients", clientRoutes); 
 app.use("/api/tasks", taskRoutes);     
+app.use("/api/plannings", planningRoutes);
 
 // 5. Server Start
 const PORT = process.env.PORT || 5000;
