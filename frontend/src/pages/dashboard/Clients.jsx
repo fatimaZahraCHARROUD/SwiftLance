@@ -1,31 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Trash2, Edit, UserPlus, Building2, User } from 'lucide-react';
+import { Trash2, Edit, UserPlus, Building2, User, X } from 'lucide-react';
 
 export default function Clients() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingClient, setEditingClient] = useState(null); // Bach n-suiview chkoune k-n-modifiw
 
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
     address: '',
-    type: 'Individual' // Champ darouri 7asab l-database
+    type: 'Individual' 
   });
 
   const fetchClients = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/clients', {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await fetch('http://localhost:5000/api/clients', {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
-      setClients(res.data);
-      setLoading(false);
+      if (res.ok) {
+        const data = await res.json();
+        setClients(data);
+      }
     } catch (err) {
       console.error("Erreur fetching clients:", err);
+    } finally {
       setLoading(false);
     }
   };
@@ -34,35 +40,68 @@ export default function Clients() {
     fetchClients();
   }, []);
 
+  // Function bach t-prepari l-modal b les données dyal l-client
+  const handleEditClick = (client) => {
+    setEditingClient(client);
+    setFormData({
+      fullName: client.fullName || client.name || '',
+      email: client.email || '',
+      phone: client.phone || '',
+      address: client.address || '',
+      type: client.type || 'Individual'
+    });
+    setIsModalOpen(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/clients', formData, {
-        headers: { Authorization: `Bearer ${token}` }
+      
+      // ILA kan editingClient, k-n-diro PUT l-dak l-ID, sinon k-n-diro POST jdid
+      const url = editingClient 
+        ? `http://localhost:5000/api/clients/${editingClient._id}` 
+        : 'http://localhost:5000/api/clients';
+      
+      const method = editingClient ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method: method,
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
       });
-      setIsModalOpen(false);
-      setFormData({ fullName: '', email: '', phone: '', address: '', type: 'Individual' });
-      fetchClients();
+
+      if (response.ok) {
+        setIsModalOpen(false);
+        setEditingClient(null);
+        setFormData({ fullName: '', email: '', phone: '', address: '', type: 'Individual' });
+        fetchClients();
+      } else {
+        const errorData = await response.json();
+        alert("Erreur: " + (errorData.message || "Action impossible"));
+      }
     } catch (err) {
-      alert("Erreur lors de l'ajout du client");
+      alert("Erreur réseau");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const deleteClient = async (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/api/clients/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        fetchClients();
-      } catch (err) {
-        alert("Erreur lors de la suppression");
-      }
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) return;
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/clients/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) fetchClients();
+    } catch (err) {
+      alert("Erreur lors de la suppression");
     }
   };
 
@@ -81,7 +120,11 @@ export default function Clients() {
           <p className="text-slate-500 text-sm">Manage your customer relationships and details.</p>
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setEditingClient(null); // Re-set bach i-koun form khawi
+            setFormData({ fullName: '', email: '', phone: '', address: '', type: 'Individual' });
+            setIsModalOpen(true);
+          }}
           className="bg-[#3327db] text-white px-5 py-2.5 rounded-xl hover:bg-opacity-90 shadow-lg shadow-blue-200 transition flex items-center gap-2 font-semibold"
         >
           <UserPlus size={18} /> Add Client
@@ -91,10 +134,14 @@ export default function Clients() {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden scale-in-center">
+          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-              <h3 className="text-xl font-bold text-slate-800">New Client Info</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 transition">✕</button>
+              <h3 className="text-xl font-bold text-slate-800">
+                {editingClient ? 'Edit Client' : 'New Client Info'}
+              </h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-red-500 transition">
+                <X size={20}/>
+              </button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -103,7 +150,6 @@ export default function Clients() {
                 <input 
                   type="text" required
                   className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
-                  placeholder="e.g. Ahmed Benali"
                   value={formData.fullName}
                   onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                 />
@@ -114,7 +160,6 @@ export default function Clients() {
                 <input 
                   type="email" required
                   className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
-                  placeholder="client@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
@@ -147,7 +192,6 @@ export default function Clients() {
                   <input 
                     type="text"
                     className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
-                    placeholder="e.g. Nador"
                     value={formData.address}
                     onChange={(e) => setFormData({...formData, address: e.target.value})}
                   />
@@ -161,7 +205,7 @@ export default function Clients() {
                   disabled={isSubmitting}
                   className="flex-1 py-3 rounded-xl font-bold text-white bg-[#3327db] shadow-lg shadow-blue-100 disabled:bg-slate-300 transition"
                 >
-                  {isSubmitting ? "Saving..." : "Save Client"}
+                  {isSubmitting ? "Saving..." : (editingClient ? "Update Client" : "Save Client")}
                 </button>
               </div>
             </form>
@@ -169,7 +213,7 @@ export default function Clients() {
         </div>
       )}
 
-      {/* Table */}
+      {/* Clients Table */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -209,7 +253,10 @@ export default function Clients() {
                   </td>
                   <td className="p-5">
                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition">
+                      <button 
+                        onClick={() => handleEditClick(client)}
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                      >
                         <Edit size={16} />
                       </button>
                       <button 
@@ -225,13 +272,7 @@ export default function Clients() {
             ) : (
               <tr>
                 <td colSpan="5" className="p-20 text-center text-slate-400">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-2">
-                      <UserPlus size={32} className="text-slate-200" />
-                    </div>
-                    <p className="font-semibold">No clients yet</p>
-                    <p className="text-xs">Click the button above to add your first customer.</p>
-                  </div>
+                  <p>Aucun client trouvé.</p>
                 </td>
               </tr>
             )}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Plus, Calendar, Hash, CheckCircle2, Clock, Layout, AlertCircle, Search } from 'lucide-react';
+import { 
+  Plus, Calendar, CheckCircle2, Trash2, Edit3, Search, Circle, X, Target 
+} from 'lucide-react';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -8,31 +9,31 @@ export default function Tasks() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingTask, setEditingTask] = useState(null);
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    projectId: '',
-    status: 'todo',
-    priority: 'medium',
-    dueDate: '',
-    estimatedHours: 0
+    title: '', projectId: '', status: 'todo', priority: 'medium', dueDate: '', estimatedHours: 0
   });
 
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      
+      const headers = { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+
       const [resTasks, resProjects] = await Promise.all([
-        axios.get('http://localhost:5000/api/tasks', config),
-        axios.get('http://localhost:5000/api/projects', config)
+        fetch('http://localhost:5000/api/tasks', { headers }),
+        fetch('http://localhost:5000/api/projects', { headers })
       ]);
 
-      setTasks(resTasks.data);
-      setProjects(resProjects.data);
+      if (resTasks.ok && resProjects.ok) {
+        setTasks(await resTasks.json());
+        setProjects(await resProjects.json());
+      }
     } catch (err) {
-      console.error("Erreur lors de la récupération :", err);
+      console.error("Erreur de chargement:", err);
     } finally {
       setLoading(false);
     }
@@ -42,185 +43,229 @@ export default function Tasks() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+    const url = editingTask 
+      ? `http://localhost:5000/api/tasks/${editingTask._id}` 
+      : 'http://localhost:5000/api/tasks';
+    
+    // UPDATED: Kheddamin b PUT f l-update kima f l-Backend
+    const method = editingTask ? 'PUT' : 'POST';
+    
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        setIsModalOpen(false);
+        setEditingTask(null);
+        setFormData({ title: '', projectId: '', status: 'todo', priority: 'medium', dueDate: '', estimatedHours: 0 });
+        fetchData();
+      } else {
+        const errorData = await response.json();
+        alert("Erreur : " + (errorData.message || "Impossible d'enregistrer la tâche"));
+      }
+    } catch (err) {
+      alert("Erreur réseau : Impossible de contacter le serveur");
+    }
+  };
+
+  const toggleTaskStatus = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/tasks', formData, {
-        headers: { Authorization: `Bearer ${token}` }
+      const newStatus = currentStatus === 'done' ? 'todo' : 'done';
+      
+      // Khassna n-chedu l-task kamla bach n-seftoha f l-PUT
+      const taskToUpdate = tasks.find(t => t._id === id);
+      
+      const response = await fetch(`http://localhost:5000/api/tasks/${id}`, {
+        method: 'PUT', // UPDATED: Beddelna PATCH b PUT
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        // F PUT, a7san t-sefti l-data kamla dyal l-task bach t-eviti machakil validation
+        body: JSON.stringify({ 
+          ...taskToUpdate, 
+          status: newStatus,
+          projectId: taskToUpdate.projectId?._id || taskToUpdate.projectId
+        })
       });
-      setIsModalOpen(false);
-      setFormData({ title: '', description: '', projectId: '', status: 'todo', priority: 'medium', dueDate: '', estimatedHours: 0 });
-      fetchData();
+      if (response.ok) fetchData();
     } catch (err) {
-      alert("Erreur lors de la création de la tâche");
+      alert("Erreur lors de la mise à jour du statut");
     }
+  };
+
+  const deleteTask = async (id) => {
+    if(!window.confirm("Voulez-vous vraiment supprimer cette tâche ?")) return;
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/tasks/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) fetchData();
+      else alert("Erreur lors de la suppression");
+    } catch (err) {
+      alert("Erreur réseau");
+    }
+  };
+
+  const handleEditClick = (task) => {
+    setEditingTask(task);
+    setFormData({
+      title: task.title,
+      projectId: task.projectId?._id || task.projectId || '',
+      status: task.status,
+      priority: task.priority,
+      dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
+      estimatedHours: task.estimatedHours || 0
+    });
+    setIsModalOpen(true);
   };
 
   const filteredTasks = tasks.filter(t => 
     t.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getPriorityColor = (priority) => {
-    switch(priority) {
-      case 'high': return 'bg-red-50 text-red-500 border-red-100';
-      case 'medium': return 'bg-orange-50 text-[#f97316] border-[#ffedd5]';
-      default: return 'bg-blue-50 text-blue-500 border-blue-100';
-    }
-  };
-
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#fdfaf5]">
-       <div className="animate-pulse text-[#f97316] font-bold text-xl tracking-widest">LOADING TASKS...</div>
+    <div className="min-h-screen flex items-center justify-center bg-[#fcfcfd]">
+       <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600"></div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#fdfaf5] p-6 md:p-12">
-      <div className="max-w-7xl mx-auto">
-        
-        {/* --- Header Section --- */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-               <div className="h-1 w-10 bg-[#f97316] rounded-full"></div>
-               <span className="text-[#fdba74] font-bold uppercase text-[12px] tracking-[0.25em]">Workflow</span>
-            </div>
-            <h2 className="text-5xl font-extrabold text-[#1f2937] tracking-tighter">Project <span className="text-[#f97316]">Tasks</span></h2>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <div className="relative group">
-               <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#fdba74] group-focus-within:text-[#f97316] transition-colors" size={20} />
-               <input 
-                 type="text" placeholder="Find a task..."
-                 className="pl-14 pr-6 py-4 rounded-[2rem] bg-white border border-slate-100 shadow-[0_10px_35px_-10px_rgba(249,115,22,0.05)] outline-none focus:border-[#ffedd5] focus:ring-4 focus:ring-[#f97316]/5 w-full sm:w-80 transition-all placeholder:text-slate-300"
-                 onChange={(e) => setSearchTerm(e.target.value)}
-               />
-            </div>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-[#f97316] hover:bg-[#ea580c] text-white px-10 py-4 rounded-[2rem] flex items-center justify-center gap-3 shadow-[0_15px_40px_-10px_rgba(249,115,22,0.4)] hover:shadow-[0_18px_50px_-10px_rgba(249,115,22,0.5)] transition-all active:scale-95"
-            >
-              <Plus size={22} strokeWidth={3} /> <span className="font-extrabold">New Task</span>
-            </button>
-          </div>
+    <div className="min-h-screen bg-[#fcfcfd] font-sans pb-12 pt-8">
+      <div className="px-12 mb-10 flex justify-between items-center gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
+          <input 
+            type="text" placeholder="Rechercher des tâches..." 
+            className="w-full pl-16 pr-8 py-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 shadow-sm transition-all"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-
-        {/* --- Tasks Grid --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredTasks.length > 0 ? filteredTasks.map(task => (
-            <div key={task._id} className="bg-white p-8 rounded-[3rem] border-2 border-white hover:border-[#ffedd5] shadow-[0_15px_50px_-15px_rgba(0,0,0,0.03)] transition-all duration-500 group">
-              <div className="flex justify-between items-start mb-6">
-                <span className={`text-[10px] font-black uppercase px-4 py-1.5 rounded-full border ${getPriorityColor(task.priority)}`}>
-                  {task.priority}
-                </span>
-                <div className="p-2 bg-slate-50 rounded-xl group-hover:bg-[#f97316]/10 group-hover:text-[#f97316] transition-colors text-slate-200">
-                  <CheckCircle2 size={20} />
-                </div>
-              </div>
-
-              <h4 className="font-extrabold text-[#1f2937] text-xl mb-3 group-hover:text-[#f97316] transition-colors">{task.title}</h4>
-              <p className="text-slate-400 text-sm line-clamp-2 mb-8 font-medium leading-relaxed">{task.description}</p>
-              
-              <div className="pt-6 border-t border-[#fdfaf5] flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 text-slate-400 text-[12px] font-bold">
-                    <Calendar size={14} className="text-[#fdba74]" />
-                    <span>{new Date(task.dueDate).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-slate-400 text-[12px] font-bold">
-                    <Clock size={14} className="text-[#fdba74]" />
-                    <span>{task.estimatedHours}h</span>
-                  </div>
-                </div>
-                <div className="h-8 w-8 rounded-full bg-[#ffedd5] flex items-center justify-center text-[#f97316]">
-                  <Layout size={14} />
-                </div>
-              </div>
-            </div>
-          )) : (
-            <div className="col-span-full text-center py-24 bg-white rounded-[4rem] border-4 border-dashed border-[#ffedd5]">
-               <div className="bg-[#fff7ed] inline-block p-6 rounded-full text-[#f97316] mb-6">
-                  <AlertCircle size={40} />
-               </div>
-               <p className="text-[#1f2937] font-black text-xl">No tasks found.</p>
-               <p className="text-[#fdba74] font-medium mt-2">Ready to conquer your goals?</p>
-            </div>
-          )}
-        </div>
+        <button 
+          onClick={() => { setEditingTask(null); setFormData({ title: '', projectId: '', status: 'todo', priority: 'medium', dueDate: '', estimatedHours: 0 }); setIsModalOpen(true); }}
+          className="bg-[#4f46e5] hover:bg-[#4338ca] text-white px-10 py-4 rounded-2xl font-bold flex items-center gap-3 shadow-xl shadow-indigo-100 active:scale-95 transition-all"
+        >
+          <Plus size={22} strokeWidth={3} /> Ajouter une tâche
+        </button>
       </div>
 
-      {/* --- Modern Orange Modal --- */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-[#1f2937]/20 backdrop-blur-xl z-50 flex items-center justify-center p-5">
-          <div className="bg-white rounded-[3.5rem] shadow-2xl w-full max-w-2xl p-12 relative overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-[#f97316] to-[#fdba74]"></div>
+      <div className="px-12 space-y-4">
+        {filteredTasks.map(task => (
+          <div key={task._id} 
+               className={`group flex items-center justify-between p-6 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all duration-300 ${task.status === 'done' ? 'bg-slate-50/50 opacity-80' : ''}`}>
             
-            <h3 className="text-3xl font-extrabold text-[#1f2937] mb-10 tracking-tight">Create <span className="text-[#f97316]">Task</span></h3>
+            <div className="flex items-center gap-6">
+              <button 
+                onClick={() => toggleTaskStatus(task._id, task.status)}
+                className={`transition-all transform active:scale-75 ${task.status === 'done' ? 'text-green-500' : 'text-slate-200 hover:text-indigo-500'}`}
+              >
+                {task.status === 'done' ? <CheckCircle2 size={32} /> : <Circle size={32} />}
+              </button>
+
+              <div>
+                <h4 className={`font-bold text-lg transition-all ${task.status === 'done' ? 'line-through text-slate-300' : 'text-slate-700'}`}>
+                  {task.title}
+                </h4>
+                <div className="flex items-center gap-4 mt-1">
+                  <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-lg tracking-wider ${task.status === 'done' ? 'bg-slate-100 text-slate-400' : 'bg-indigo-50 text-indigo-600'}`}>
+                    {projects.find(p => p._id === (task.projectId?._id || task.projectId))?.title || "Général"}
+                  </span>
+                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${task.priority === 'high' ? 'text-red-500' : 'text-slate-400'}`}>
+                    {task.priority}
+                  </span>
+                  <span className="text-slate-300 text-[11px] font-bold flex items-center gap-1">
+                    <Calendar size={12} /> {task.dueDate ? new Date(task.dueDate).toLocaleDateString('fr-FR') : 'Pas de date'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+              <button onClick={() => handleEditClick(task)} className="p-3 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
+                <Edit3 size={18} />
+              </button>
+              <button onClick={() => deleteTask(task._id)} className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                <Trash2 size={18} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="bg-white rounded-[3.5rem] w-full max-w-xl p-12 shadow-2xl relative animate-in zoom-in-95">
+            <button onClick={() => setIsModalOpen(false)} className="absolute top-10 right-10 text-slate-300 hover:text-red-500">
+              <X size={24}/>
+            </button>
+            <h3 className="text-3xl font-black text-slate-900 mb-10">
+              {editingTask ? 'Modifier' : 'Nouvelle'} <span className="text-indigo-600">Tâche</span>
+            </h3>
             
             <form onSubmit={handleSubmit} className="space-y-6">
-              <input 
-                type="text" placeholder="What needs to be done?" required
-                className="w-full p-6 rounded-2xl border border-transparent bg-[#fcf9f5] outline-none focus:border-[#ffedd5] focus:ring-4 focus:ring-[#f97316]/5 transition-all text-lg"
-                value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
-              />
-              
-              <textarea 
-                placeholder="Brief description..."
-                className="w-full p-6 rounded-2xl border border-transparent bg-[#fcf9f5] h-32 outline-none focus:border-[#ffedd5] focus:ring-4 focus:ring-[#f97316]/5 transition-all resize-none"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-              />
-              
-              <div className="grid grid-cols-2 gap-6">
-                <select 
-                  required className="w-full p-5 rounded-2xl border border-transparent bg-[#fcf9f5] outline-none focus:border-[#ffedd5] focus:ring-4 focus:ring-[#f97316]/5 transition-all appearance-none text-slate-500 font-bold"
-                  value={formData.projectId}
-                  onChange={(e) => setFormData({...formData, projectId: e.target.value})}
-                >
-                  <option value="">Link to Project</option>
-                  {projects.map(p => (
-                    <option key={p._id} value={p._id}>{p.title}</option>
-                  ))}
-                </select>
-
-                <select 
-                  className="w-full p-5 rounded-2xl border border-transparent bg-[#fcf9f5] outline-none focus:border-[#ffedd5] focus:ring-4 focus:ring-[#f97316]/5 transition-all appearance-none text-slate-500 font-bold"
-                  value={formData.priority}
-                  onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                >
-                  <option value="low">Low Priority</option>
-                  <option value="medium">Medium Priority</option>
-                  <option value="high">High Priority</option>
-                </select>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-4">Titre de la mission</label>
+                <input 
+                  type="text" placeholder="Ce qu'il faut faire..." required
+                  className="w-full p-5 bg-slate-50 border-none rounded-2xl font-bold outline-none text-slate-700 focus:ring-2 focus:ring-indigo-200"
+                  value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})}
+                />
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-[#fdba74] ml-4">Due Date</label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-4">Projet</label>
+                  <select 
+                    required className="w-full p-5 bg-slate-50 border-none rounded-2xl font-bold text-slate-500 outline-none cursor-pointer"
+                    value={formData.projectId} onChange={(e) => setFormData({...formData, projectId: e.target.value})}
+                  >
+                    <option value="">Lier un projet</option>
+                    {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-4">Priorité</label>
+                  <select 
+                    className="w-full p-5 bg-slate-50 border-none rounded-2xl font-bold text-slate-500 outline-none cursor-pointer"
+                    value={formData.priority} onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                  >
+                    <option value="low">Faible</option>
+                    <option value="medium">Moyenne</option>
+                    <option value="high">Haute</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-4">Échéance</label>
                   <input 
-                    type="date" className="w-full p-5 rounded-2xl border border-transparent bg-[#fcf9f5] outline-none focus:border-[#ffedd5]"
-                    value={formData.dueDate}
-                    onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
+                    type="date" className="w-full p-5 bg-slate-50 border-none rounded-2xl font-bold text-slate-500 outline-none"
+                    value={formData.dueDate} onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-[#fdba74] ml-4">Est. Hours</label>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-4">Heures est.</label>
                   <input 
-                    type="number" placeholder="Hours"
-                    className="w-full p-5 rounded-2xl border border-transparent bg-[#fcf9f5] outline-none focus:border-[#ffedd5]"
-                    value={formData.estimatedHours}
-                    onChange={(e) => setFormData({...formData, estimatedHours: e.target.value})}
+                    type="number" className="w-full p-5 bg-slate-50 border-none rounded-2xl font-bold text-slate-500 outline-none"
+                    value={formData.estimatedHours} onChange={(e) => setFormData({...formData, estimatedHours: e.target.value})}
                   />
                 </div>
               </div>
 
-              <div className="flex gap-6 pt-6">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 font-bold text-slate-300 hover:text-[#1f2937] transition-colors">Cancel</button>
-                <button type="submit" className="flex-[2] py-5 bg-[#f97316] text-white rounded-[1.5rem] font-extrabold shadow-lg shadow-[#f97316]/30 hover:bg-[#ea580c] transition-all">
-                  Launch Task
-                </button>
-              </div>
+              <button type="submit" className="w-full py-6 bg-[#4f46e5] text-white rounded-[2rem] font-black text-lg hover:bg-indigo-700 shadow-xl transition-all">
+                {editingTask ? 'Mettre à jour' : 'Créer la tâche'}
+              </button>
             </form>
           </div>
         </div>
