@@ -16,6 +16,7 @@ import Projects from "./pages/dashboard/Projects";
 import Paiment from "./pages/dashboard/Paiment";
 import  Note from "./pages/dashboard/Note";
 import Tasks from "./pages/dashboard/Tasks";
+import File from "./pages/dashboard/File";
 import Planning from "./pages/dashboard/Planning";
 import Notification from "./pages/dashboard/Notification";
 // Protected route
@@ -49,6 +50,7 @@ function App() {
           <Route path="projects" element={<Projects />} />
           
           <Route path="note" element={<Note />} />
+          <Route path="files" element={<File />} />
           <Route path="settings" element={<Setting />} />
           <Route path="paiment" element={<Paiment />} />
           <Route path="planning" element={<Planning />} />

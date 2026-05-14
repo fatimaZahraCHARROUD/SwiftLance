@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Pencil, Trash2, Plus, X, Info } from "lucide-react";
+import React, { useEffect, useState, useRef } from "react";
+import { Pencil, Trash2, Plus, X, Info, File } from "lucide-react";
 
 const API_URL = "http://localhost:5000/api/projects";
 const CLIENTS_URL = "http://localhost:5000/api/clients";
 const NOTES_URL = "http://localhost:5000/api/notes";
 const TASKS_URL = "http://localhost:5000/api/tasks";
+const FILES_URL = "http://localhost:5000/api/files";
 
 function Projects() {
   const [projects, setProjects] = useState([]);
@@ -22,6 +23,13 @@ const [selectedProject, setSelectedProject] = useState(null);
 
 const [projectNotes, setProjectNotes] = useState([]);
 const [projectTasks, setProjectTasks] = useState([]);
+
+const [projectFiles, setProjectFiles] = useState([]);
+const [filesOpen, setFilesOpen] = useState(false);
+const [fileFormOpen, setFileFormOpen] = useState(false);
+
+const fileInputRef = useRef(null);
+const [selectedFile, setSelectedFile] = useState(null);
 
 const [expandedNote, setExpandedNote] = useState(null);
 
@@ -65,6 +73,63 @@ const [expandedNote, setExpandedNote] = useState(null);
     };
     load();
   }, []);
+
+  const fetchProjectFiles = async (projectId) => {
+  const res = await fetch(`${FILES_URL}/project/${projectId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  const data = await res.json();
+  setProjectFiles(data);
+};
+
+//files 
+const uploadProjectFile = async () => {
+  if (!selectedFile || !selectedProject) {
+    return alert("Select file");
+  }
+
+  const formData = new FormData();
+  formData.append("file", selectedFile);
+  formData.append("project", selectedProject._id);
+
+  const res = await fetch(FILES_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: formData,
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) return alert(data.message);
+
+  setSelectedFile(null);
+  if (fileInputRef.current) fileInputRef.current.value = "";
+
+  fetchProjectFiles(selectedProject._id);
+};
+const deleteProjectFile = async (id) => {
+  if (!window.confirm("Delete file?")) return;
+
+  await fetch(`${FILES_URL}/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  fetchProjectFiles(selectedProject._id);
+};
+
+const openFiles = async (project) => {
+  setSelectedProject(project);
+  await fetchProjectFiles(project._id);
+  setFilesOpen(true);
+};
 
   // ================= FORM =================
   const handleChange = (e) => {
@@ -299,6 +364,11 @@ const deleteTask = async (id) => {
                 <button onClick={() => openInfo(p)}>
                   <Info size={16} className="text-gray-500" />
                 </button>
+                <button
+                  onClick={() => openFiles(p)}
+                >
+                  <File size={18} className="text-gray-500" />
+                </button>
               </div>
 
               <h3 className="font-bold text-lg">{p.title}</h3>
@@ -375,6 +445,69 @@ const deleteTask = async (id) => {
         </div>
       )}
 
+{filesOpen && selectedProject && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white w-[600px] p-6 rounded-2xl relative">
+
+      <button
+        onClick={() => setFilesOpen(false)}
+        className="absolute top-3 right-3"
+      >
+        <X />
+      </button>
+
+      <h2 className="text-xl font-bold mb-4">
+        Files - {selectedProject.title}
+      </h2>
+
+      {/* UPLOAD */}
+      <div className="flex gap-2 mb-4">
+        <input
+          ref={fileInputRef}
+          type="file"
+          onChange={(e) => setSelectedFile(e.target.files[0])}
+          className="border p-2 flex-1"
+        />
+
+        <button
+          onClick={uploadProjectFile}
+          className="bg-blue-600 text-white px-4 rounded"
+        >
+          Add
+        </button>
+      </div>
+
+      {/* LIST */}
+      <div className="space-y-2">
+        {projectFiles.length === 0 ? (
+          <p className="text-gray-400">No files</p>
+        ) : (
+          projectFiles.map((f) => (
+            <div
+              key={f._id}
+              className="flex justify-between items-center bg-gray-50 p-2 rounded"
+            >
+              <a
+                href={f.url}
+                target="_blank"
+                className="text-sm text-blue-600"
+              >
+                {f.name.length > 20 ? f.name.slice(0, 20) + "..." : f.name}
+              </a>
+
+              <button
+                onClick={() => deleteProjectFile(f._id)}
+                className="text-red-500 text-xs"
+              >
+                Delete
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  </div>
+)}
 
       {/* ================= DETAILS MODAL ================= */}
       {detailsOpen && selectedProject && (

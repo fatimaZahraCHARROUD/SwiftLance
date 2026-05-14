@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from "react-router-dom"; 
 import styles from './Sidebar.module.css';
-import { 
-  LayoutDashboard, StickyNote, CheckSquare, 
-  Wallet, Calendar, Users, Briefcase, LogOut,
-  ChevronLeft, ChevronRight 
-} from 'lucide-react'; 
+import {
+  LayoutDashboard, StickyNote, CheckSquare,
+  Wallet, Calendar, Users, Briefcase,
+  LogOut, ChevronLeft, ChevronRight,
+  Folder
+} from 'lucide-react';
 
 function Sidebar({ isCollapsed, setIsCollapsed }) {  const navigate = useNavigate();
  
@@ -40,8 +41,7 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {  const navigate = useNavigat
       </div>
       
       {/* Navigation: NavLink dyal Notification t-7eyed mn hna */}
-      <nav className="flex flex-col flex-1 mt-4">
-        <NavLink to="/app" end className={getStyle} title="Analytics">
+        <nav className="flex flex-col flex-1 mt-4 overflow-y-auto">        <NavLink to="/app" end className={getStyle} title="Analytics">
           <LayoutDashboard size={20} /> {!isCollapsed && <span>Analytics</span>}
         </NavLink>
         
@@ -67,6 +67,10 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {  const navigate = useNavigat
 
         <NavLink to="/app/projects" className={getStyle} title="Projects">
           <Briefcase size={20} /> {!isCollapsed && <span>Projects</span>}
+        </NavLink>
+
+         <NavLink to="/app/files" className={getStyle} title="Files">
+          <Folder size={20} /> {!isCollapsed && <span>Files</span>}
         </NavLink>
       </nav>
 
