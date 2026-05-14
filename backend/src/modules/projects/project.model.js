@@ -11,6 +11,12 @@ const projectSchema = new mongoose.Schema(
       default: "planning",
     },
 
+    paye: {
+      type: Boolean,
+      default: false,
+    },
+
+
     budget: { type: Number, default: 0 },
 
     startDate: { type: Date },

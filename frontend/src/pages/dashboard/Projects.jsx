@@ -38,6 +38,7 @@ const [expandedNote, setExpandedNote] = useState(null);
     description: "",
     status: "planning",
     budget: 0,
+    paye:false,
     startDate: "",
     endDate: "",
     client: "",
@@ -132,9 +133,17 @@ const openFiles = async (project) => {
 };
 
   // ================= FORM =================
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setForm({
+    ...form,
+    [name]:
+      name === "paye"
+        ? value === "true"
+        : value,
+  });
+};
 
   // ================= RESET =================
   const resetForm = () => {
@@ -143,6 +152,7 @@ const openFiles = async (project) => {
       description: "",
       status: "planning",
       budget: 0,
+      paye: false,
       startDate: "",
       endDate: "",
       client: "",
@@ -164,6 +174,7 @@ const openFiles = async (project) => {
       description: p.description,
       status: p.status,
       budget: p.budget,
+      paye: p.paye || false,
       startDate: p.startDate?.split("T")[0] || "",
       endDate: p.endDate?.split("T")[0] || "",
       client: p.client?._id || "",
@@ -388,6 +399,17 @@ const deleteTask = async (id) => {
               </p>
 
               <div className="mt-3">{statusBadge(p.status)}</div>
+              <div className="mt-2">
+                {p.paye ? (
+                  <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                    💰 Payé
+                  </span>
+                ) : (
+                  <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">
+                    ❌ Non Payé
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -420,7 +442,15 @@ const deleteTask = async (id) => {
             </select>
 
             <input type="number" name="budget" value={form.budget} onChange={handleChange} className="w-full border p-2 mb-2" />
-
+            <select
+              name="paye"
+              value={form.paye}
+              onChange={handleChange}
+              className="w-full border p-2 mb-2"
+            >
+              <option value={false}>Non Payé</option>
+              <option value={true}>Payé</option>
+            </select>
             <input type="date" name="startDate" value={form.startDate} onChange={handleChange} className="w-full border p-2 mb-2" />
 
             <input type="date" name="endDate" value={form.endDate} onChange={handleChange} className="w-full border p-2 mb-2" />
@@ -550,6 +580,13 @@ const deleteTask = async (id) => {
 
                 <p className="font-semibold">
                   {selectedProject.budget} DH
+                </p>
+              </div>
+              <div className="bg-slate-50 p-4 rounded-xl">
+                <p className="text-xs text-gray-400">Paiement</p>
+
+                <p className="font-semibold">
+                  {selectedProject.paye ? "💰 Payé" : "❌ Non Payé"}
                 </p>
               </div>
 
