@@ -6,7 +6,7 @@ export default function Clients() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingClient, setEditingClient] = useState(null); // Bach n-suiview chkoune k-n-modifiw
+  const [editingClient, setEditingClient] = useState(null); 9
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -40,7 +40,6 @@ export default function Clients() {
     fetchClients();
   }, []);
 
-  // Function bach t-prepari l-modal b les données dyal l-client
   const handleEditClick = (client) => {
     setEditingClient(client);
     setFormData({
@@ -59,7 +58,6 @@ export default function Clients() {
     try {
       const token = localStorage.getItem('token');
       
-      // ILA kan editingClient, k-n-diro PUT l-dak l-ID, sinon k-n-diro POST jdid
       const url = editingClient 
         ? `http://localhost:5000/api/clients/${editingClient._id}` 
         : 'http://localhost:5000/api/clients';
@@ -121,7 +119,7 @@ export default function Clients() {
         </div>
         <button 
           onClick={() => {
-            setEditingClient(null); // Re-set bach i-koun form khawi
+            setEditingClient(null);
             setFormData({ fullName: '', email: '', phone: '', address: '', type: 'Individual' });
             setIsModalOpen(true);
           }}
@@ -130,8 +128,6 @@ export default function Clients() {
           <UserPlus size={18} /> Add Client
         </button>
       </div>
-
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
@@ -213,7 +209,6 @@ export default function Clients() {
         </div>
       )}
 
-      {/* Clients Table */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
