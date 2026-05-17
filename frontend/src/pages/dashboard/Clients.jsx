@@ -111,7 +111,7 @@ export default function Clients() {
 
   return (
     <div className="p-6 relative animate-in fade-in duration-500">
-      {/* Header */}
+      
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-2xl font-bold text-slate-800 tracking-tight">My Clients</h2>
