@@ -34,7 +34,7 @@ export default function Note() {
         setNotes(await resNotes.json());
       }
     } catch (err) {
-      console.error("Erreur de chargement:", err);
+      console.error("Error loading data:", err);
     } finally {
       setLoading(false);
     }
@@ -69,15 +69,15 @@ export default function Note() {
         fetchData(); 
       } else {
         const errorData = await response.json();
-        alert("Erreur backend: " + (errorData.message || "Erreur de validation"));
+        alert("Backend error: " + (errorData.message || "Validation error"));
       }
     } catch (err) {
-      alert("Erreur réseau");
+      alert("Network error");
     }
   };
 
   const deleteNote = async (id) => {
-    if (!window.confirm("Voulez-vous vraiment supprimer cette note ?")) return;
+    if (!window.confirm("Are you sure you want to delete this note?")) return;
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:5000/api/notes/${id}`, {
@@ -85,9 +85,9 @@ export default function Note() {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) fetchData();
-      else alert("Erreur lors de la suppression");
+      else alert("Error during deletion");
     } catch (err) {
-      alert("Erreur réseau lors de la suppression");
+      alert("Network error during deletion");
     }
   };
 
@@ -120,7 +120,7 @@ export default function Note() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
           <input 
             type="text" 
-            placeholder="Rechercher des notes..." 
+            placeholder="Search notes..." 
             className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition-all text-sm text-slate-900 font-medium placeholder:text-slate-400"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -129,7 +129,7 @@ export default function Note() {
           onClick={() => { setEditingNote(null); setFormData({title:'', content:'', projectId:''}); setIsModalOpen(true); }}
           className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all text-sm"
         >
-          <Plus size={18} /> Ajouter une note
+          <Plus size={18} /> Add Note
         </button>
       </div>
 
@@ -140,9 +140,9 @@ export default function Note() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Note / Titre</th>
-                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Projet</th>
-                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Aperçu du contenu</th>
+                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Note / Title</th>
+                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Project</th>
+                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Content Preview</th>
                   <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
@@ -150,7 +150,7 @@ export default function Note() {
                 {filteredNotes.length === 0 ? (
                   <tr>
                     <td colSpan="4" className="px-8 py-16 text-center text-sm text-slate-500 font-medium italic">
-                      Aucune note trouvée
+                      No notes found
                     </td>
                   </tr>
                 ) : (
@@ -172,7 +172,7 @@ export default function Note() {
                       {/* Column 2: Project Badge (Matching Tasks Style) */}
                       <td className="px-8 py-6 whitespace-nowrap">
                         <span className="inline-flex items-center px-2.5 py-1 bg-blue-50 text-blue-900 text-[11px] font-extrabold rounded-md border border-blue-200 uppercase tracking-wider">
-                          {projects.find(p => p._id === (note.projectId?._id || note.projectId))?.title || "Général"}
+                          {projects.find(p => p._id === (note.projectId?._id || note.projectId))?.title || "General"}
                         </span>
                       </td>
 
@@ -187,21 +187,21 @@ export default function Note() {
                           <button 
                             onClick={() => setViewingNote(note)} 
                             className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                            title="Voir"
+                            title="View"
                           >
                             <Eye size={16} strokeWidth={2.5} />
                           </button>
                           <button 
                             onClick={() => handleEdit(note)} 
                             className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                            title="Modifier"
+                            title="Edit"
                           >
                             <Edit3 size={16} strokeWidth={2.5} />
                           </button>
                           <button 
                             onClick={() => deleteNote(note._id)} 
                             className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                            title="Supprimer"
+                            title="Delete"
                           >
                             <Trash2 size={16} strokeWidth={2.5} />
                           </button>
@@ -228,15 +228,15 @@ export default function Note() {
               <X size={18} strokeWidth={2.5}/>
             </button>
             <h3 className="text-lg font-black text-slate-900 mb-5">
-              {editingNote ? 'Modifier la note' : 'Créer une nouvelle note'}
+              {editingNote ? 'Edit Note' : 'Create New Note'}
             </h3>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Titre de la note</label>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Note Title</label>
                 <input 
                   type="text" 
-                  placeholder="Ex: Architecture de la base de données" 
+                  placeholder="e.g., Database Architecture Design" 
                   required
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                   value={formData.title} 
@@ -245,22 +245,22 @@ export default function Note() {
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Projet lié</label>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Linked Project</label>
                 <select 
                   required 
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                   value={formData.projectId} 
                   onChange={(e) => setFormData({...formData, projectId: e.target.value})}
                 >
-                  <option value="">Sélectionner un projet</option>
+                  <option value="">Select a project</option>
                   {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Contenu de la note</label>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Note Content</label>
                 <textarea 
-                  placeholder="Écrivez vos idées ici..." 
+                  placeholder="Write your ideas here..." 
                   required
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 h-36 resize-none transition-all"
                   value={formData.content} 
@@ -274,13 +274,13 @@ export default function Note() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-900 rounded-lg text-sm font-bold transition-all"
                 >
-                  Annuler
+                  Cancel
                 </button>
                 <button 
                   type="submit" 
                   className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold shadow-sm transition-all"
                 >
-                  {editingNote ? 'Mettre à jour' : 'Enregistrer'}
+                  {editingNote ? 'Update Note' : 'Save Note'}
                 </button>
               </div>
             </form>
@@ -311,7 +311,7 @@ export default function Note() {
                 onClick={() => setViewingNote(null)} 
                 className="px-5 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-900 rounded-lg text-sm font-bold transition-all"
               >
-                Fermer
+                Close
               </button>
             </div>
           </div>
