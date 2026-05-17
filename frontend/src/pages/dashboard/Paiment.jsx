@@ -3,7 +3,7 @@ import {
   DollarSign, Calendar, TrendingUp, CheckCircle, 
   Clock, PieChart, Wallet, ArrowUpRight 
 } from 'lucide-react';
-// التعديل هنا: إستيراد مكونات الـ LineChart عوض الـ BarChart
+
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function PaymentDashboard() {
@@ -27,36 +27,35 @@ export default function PaymentDashboard() {
     fetchProjects();
   }, []);
 
-  // فلتتة المشاريع بناءً على حقل paye الحقيقي
+  // Filter projects based on the real 'paye' database field
   const paidProjects = projects.filter(p => p.paye === true);
   const unpaidProjects = projects.filter(p => p.paye === false);
   
-  // الحسابات الإجمالية للديناميكية
+  // Calculate dynamic totals
   const totalIncome = paidProjects.reduce((acc, curr) => acc + (curr.budget || 0), 0);
   const pendingIncome = unpaidProjects.reduce((acc, curr) => acc + (curr.budget || 0), 0);
 
-  // --- حساب البيانات الحقيقية بدقة تامة بناءً على الشهر المكتوب ف التاريخ ديريكت ---
+  // --- Calculate monthly breakdown for the LineChart directly from date fields ---
   const getChartData = () => {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     
     return months.map((month, index) => {
-      // حساب مجموع الـ budget للمشاريع المخلصة (Paid) لي تابعة لهاد الشهر بالظبط
+      // Calculate total budget of paid projects matching this month index
       const totalPaidForMonth = paidProjects
         .filter(p => {
-          // أخذ سلسلة التاريخ الحقيقية (سواء من startDate أو createdAt)
           const dateStr = p.startDate || p.createdAt;
           if (!dateStr) return false;
 
-          // تقطيع التاريخ بناءً على "-" (مثال: "2026-03-15" غاتعطينا ["2026", "03", "15"])
+          // Split the date string (e.g., "2026-03-15" becomes ["2026", "03", "15"])
           const dateParts = dateStr.split('T')[0].split('-');
           if (dateParts.length < 2) return false;
 
-          // أخذ الشهر ديريكت من النص وتحويله لـ رقم (مع نقص 1 حيت المصفوفة كاتبدا من 0 لـ 11)
+          // Parse month component (subtracting 1 to match 0-11 array indexing)
           const projectMonthIndex = parseInt(dateParts[1], 10) - 1;
           
           return projectMonthIndex === index;
         })
-        .reduce((acc, p) => acc + (Number(p.budget) || 0), 0); // جمع الميزانية بشكل صحيح
+        .reduce((acc, p) => acc + (Number(p.budget) || 0), 0);
 
       return {
         name: month,
@@ -77,29 +76,29 @@ export default function PaymentDashboard() {
       {/* Header Section */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-[900] text-[#1B2559] tracking-tight">Rapport Financier</h1>
-          <p className="text-[#A3AED0] font-medium text-sm">Visualisation des revenus et créances.</p>
+          <h1 className="text-3xl font-[900] text-[#1B2559] tracking-tight">Financial Report</h1>
+          <p className="text-[#A3AED0] font-medium text-sm">Visualization of earnings and outstanding invoices.</p>
         </div>
         <div className="bg-white p-3 rounded-2xl shadow-sm border border-white">
-            <Wallet className="text-blue-600" size={24} />
+          <Wallet className="text-blue-600" size={24} />
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Total Encaissé" amount={totalIncome} color="bg-emerald-500" icon={<TrendingUp className="text-white" size={20}/>} />
-        <StatCard title="Montant en Attente" amount={pendingIncome} color="bg-orange-400" icon={<Clock className="text-white" size={20}/>} />
-        <StatCard title="Taux de Recouvrement" amount={`${projects.length > 0 ? Math.round((paidProjects.length/projects.length)*100) : 0}%`} color="bg-blue-600" icon={<CheckCircle className="text-white" size={20}/>} />
+        <StatCard title="Total Collected" amount={totalIncome} color="bg-emerald-500" icon={<TrendingUp className="text-white" size={20}/>} />
+        <StatCard title="Pending Amount" amount={pendingIncome} color="bg-orange-400" icon={<Clock className="text-white" size={20}/>} />
+        <StatCard title="Collection Rate" amount={`${projects.length > 0 ? Math.round((paidProjects.length / projects.length) * 100) : 0}%`} color="bg-blue-600" icon={<CheckCircle className="text-white" size={20}/>} />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         
-        {/* التعديل هنا: تحويل الـ غراف لـ LineChart خطي احترافي */}
+        {/* Revenue Line Chart */}
         <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-white h-[420px] flex flex-col">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-black text-[#1B2559]">Évolution des Revenus (DH)</h2>
+            <h2 className="text-lg font-black text-[#1B2559]">Revenue Trend (DH)</h2>
             <div className="flex items-center gap-2 text-emerald-500 font-bold text-xs">
-              <TrendingUp size={14}/> +{paidProjects.length} Projets payés
+              <TrendingUp size={14}/> +{paidProjects.length} Paid projects
             </div>
           </div>
           
@@ -142,12 +141,12 @@ export default function PaymentDashboard() {
         {/* List: Unpaid Projects */}
         <div className="bg-[#1B2559] p-8 rounded-[2.5rem] shadow-xl text-white h-[420px] flex flex-col">
           <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-            <h2 className="text-lg font-bold">Encaissements à Venir</h2>
-            <span className="text-xs font-bold text-orange-400">{unpaidProjects.length} Projets</span>
+            <h2 className="text-lg font-bold">Upcoming Inflow</h2>
+            <span className="text-xs font-bold text-orange-400">{unpaidProjects.length} Projects</span>
           </div>
           <div className="space-y-1 overflow-y-auto flex-1 custom-scrollbar">
             {unpaidProjects.map(p => <FinanceItem key={p._id} project={p} dark={true} />)}
-            {unpaidProjects.length === 0 && <p className="text-center text-white/30 py-10 text-sm italic">Tout est réglé.</p>}
+            {unpaidProjects.length === 0 && <p className="text-center text-white/30 py-10 text-sm italic">All payments settled.</p>}
           </div>
         </div>
 
@@ -183,7 +182,7 @@ const FinanceItem = ({ project, dark }) => (
     </div>
     <div className="text-right">
       <span className={`font-black text-sm ${dark ? 'text-white' : 'text-[#1B2559]'}`}>{project.budget} DH</span>
-      {dark && <p className="text-[9px] text-orange-400 font-bold uppercase tracking-tighter">En attente</p>}
+      {dark && <p className="text-[9px] text-orange-400 font-bold uppercase tracking-tighter">Pending</p>}
     </div>
   </div>
 );

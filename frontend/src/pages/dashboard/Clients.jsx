@@ -31,7 +31,7 @@ export default function Clients() {
         setClients(data);
       }
     } catch (err) {
-      console.error("Erreur fetching clients:", err);
+      console.error("Error fetching clients:", err);
     } finally {
       setLoading(false);
     }
@@ -81,17 +81,17 @@ export default function Clients() {
         fetchClients();
       } else {
         const errorData = await response.json();
-        alert("Erreur: " + (errorData.message || "Action impossible"));
+        alert("Error: " + (errorData.message || "Action impossible"));
       }
     } catch (err) {
-      alert("Erreur réseau");
+      alert("Network error");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const deleteClient = async (id) => {
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) return;
+    if (!window.confirm("Are you sure you want to delete this client?")) return;
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:5000/api/clients/${id}`, {
@@ -100,7 +100,7 @@ export default function Clients() {
       });
       if (response.ok) fetchClients();
     } catch (err) {
-      alert("Erreur lors de la suppression");
+      alert("Error during deletion");
     }
   };
 
@@ -115,15 +115,15 @@ export default function Clients() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] font-sans pb-16 pt-12">
+    <div className="min-h-screen bg-white font-sans pb-16 pt-12">
       
-      {/* --- Action Bar (بار البحث واضح وزر إضافة العميل بنفس الستايل) --- */}
+      {/* --- Action Bar (Clean search input and action button matching Tasks layout) --- */}
       <div className="w-full px-12 mx-auto mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
           <input 
             type="text" 
-            placeholder="Rechercher des clients..." 
+            placeholder="Search clients..." 
             className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition-all text-sm text-slate-900 font-semibold placeholder:text-slate-400"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -136,11 +136,11 @@ export default function Clients() {
           }}
           className="w-full sm:w-auto bg-[#4f46e5] hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm transition-all text-sm"
         >
-          <UserPlus size={16} /> Ajouter un client
+          <UserPlus size={16} /> Add Client
         </button>
       </div>
 
-      {/* --- Main Table Container (Borders & Ktaba awdah متناسقة مع الـ Tasks) --- */}
+      {/* --- Main Table Container (Borders and text hierarchy matching Tasks component) --- */}
       <div className="w-full px-12 mx-auto">
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
@@ -158,14 +158,14 @@ export default function Clients() {
                 {filteredClients.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="px-8 py-16 text-center text-sm font-bold text-slate-400">
-                      Aucun client trouvé
+                      No clients found
                     </td>
                   </tr>
                 ) : (
                   filteredClients.map((client) => (
                     <tr key={client._id} className="hover:bg-slate-50/50 transition-colors h-16">
                       
-                      {/* الإسم والأيقونة */}
+                      {/* Name and Icon */}
                       <td className="px-8 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <div className="w-7 h-7 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center justify-center text-indigo-600">
@@ -175,7 +175,7 @@ export default function Clients() {
                         </div>
                       </td>
 
-                      {/* نوع العميل الـ Badge */}
+                      {/* Client Type Badge */}
                       <td className="px-8 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-1 text-[10px] font-extrabold rounded-md border uppercase tracking-wider ${
                           client.type === 'Company' 
@@ -186,31 +186,31 @@ export default function Clients() {
                         </span>
                       </td>
 
-                      {/* معلومات الإتصال واضحة وبلون داكن وعريض */}
+                      {/* Contact Details */}
                       <td className="px-8 py-4 whitespace-nowrap text-sm">
                         <div className="text-slate-800 font-semibold">{client.email}</div>
                         <div className="text-slate-500 text-xs font-medium">{client.phone || "No phone"}</div>
                       </td>
 
-                      {/* العنوان */}
+                      {/* Address */}
                       <td className="px-8 py-4 whitespace-nowrap text-center text-sm font-semibold text-slate-700">
                         <span className="italic">{client.address || "---"}</span>
                       </td>
 
-                      {/* أزرار التحكم ظاهرة وواضحة دائماً وبألوان متباينة */}
+                      {/* High Contrast Actions */}
                       <td className="px-8 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end gap-4 text-slate-500">
                           <button 
                             onClick={() => handleEditClick(client)}
                             className="hover:text-indigo-600 transition-colors"
-                            title="Modifier"
+                            title="Edit"
                           >
                             <Edit size={16} />
                           </button>
                           <button 
                             onClick={() => deleteClient(client._id)}
                             className="hover:text-red-600 transition-colors"
-                            title="Supprimer"
+                            title="Delete"
                           >
                             <Trash2 size={16} />
                           </button>

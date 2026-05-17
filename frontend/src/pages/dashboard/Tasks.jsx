@@ -33,7 +33,7 @@ export default function Tasks() {
         setProjects(await resProjects.json());
       }
     } catch (err) {
-      console.error("Erreur de chargement:", err);
+      console.error("Loading error:", err);
     } finally {
       setLoading(false);
     }
@@ -67,10 +67,10 @@ export default function Tasks() {
         fetchData();
       } else {
         const errorData = await response.json();
-        alert("Erreur : " + (errorData.message || "Impossible d'enregistrer la tâche"));
+        alert("Error: " + (errorData.message || "Unable to save task"));
       }
     } catch (err) {
-      alert("Erreur réseau : Impossible de contacter le serveur");
+      alert("Network error: Unable to connect to the server");
     }
   };
 
@@ -94,12 +94,12 @@ export default function Tasks() {
       });
       if (response.ok) fetchData();
     } catch (err) {
-      alert("Erreur lors de la mise à jour du statut");
+      alert("Error updating status");
     }
   };
 
   const deleteTask = async (id) => {
-    if(!window.confirm("Voulez-vous vraiment supprimer cette tâche ?")) return;
+    if(!window.confirm("Are you sure you want to delete this task?")) return;
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:5000/api/tasks/${id}`, {
@@ -107,9 +107,9 @@ export default function Tasks() {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) fetchData();
-      else alert("Erreur lors de la suppression");
+      else alert("Error deleting task");
     } catch (err) {
-      alert("Erreur réseau");
+      alert("Network error");
     }
   };
 
@@ -130,7 +130,6 @@ export default function Tasks() {
     t.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // لوان واضحة وباينة كتر للـ Badges ديما على حساب الـ Design اللي صيفتي
   const getPriorityStyle = (priority) => {
     switch (priority) {
       case 'high': return 'bg-red-50 text-red-900 border-red-200';
@@ -154,7 +153,7 @@ export default function Tasks() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
           <input 
             type="text" 
-            placeholder="Rechercher des tâches..." 
+            placeholder="Search tasks..." 
             className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition-all text-sm text-slate-900 font-medium placeholder:text-slate-400"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -163,7 +162,7 @@ export default function Tasks() {
           onClick={() => { setEditingTask(null); setFormData({ title: '', projectId: '', status: 'todo', priority: 'medium', dueDate: '', estimatedHours: 0 }); setIsModalOpen(true); }}
           className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all text-sm"
         >
-          <Plus size={18} /> Ajouter une tâche
+          <Plus size={18} /> Add a task
         </button>
       </div>
 
@@ -174,12 +173,11 @@ export default function Tasks() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
-                  {/* رجعت لوان د العناوين بـ text-slate-600 وعقدت الـ font-bold باش تبان */}
-                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Statut / Mission</th>
-                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Projet</th>
-                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Priorité</th>
-                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Échéance</th>
-                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Temps</th>
+                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Status / Task</th>
+                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Project</th>
+                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Priority</th>
+                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Due Date</th>
+                  <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest">Time</th>
                   <th className="px-8 py-4 text-[11px] font-extrabold uppercase text-slate-600 tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
@@ -187,7 +185,7 @@ export default function Tasks() {
                 {filteredTasks.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="px-8 py-16 text-center text-sm text-slate-500 font-medium italic">
-                      Aucune tâche trouvée
+                      No tasks found
                     </td>
                   </tr>
                 ) : (
@@ -210,20 +208,20 @@ export default function Tasks() {
 
                       <td className="px-8 py-6 whitespace-nowrap">
                         <span className="inline-flex items-center px-2.5 py-1 bg-blue-50 text-blue-900 text-[11px] font-extrabold rounded-md border border-blue-200 uppercase tracking-wider">
-                          {projects.find(p => p._id === (task.projectId?._id || task.projectId))?.title || "Général"}
+                          {projects.find(p => p._id === (task.projectId?._id || task.projectId))?.title || "General"}
                         </span>
                       </td>
 
                       <td className="px-8 py-6 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-1 text-[11px] font-extrabold rounded-md border uppercase tracking-wider ${getPriorityStyle(task.priority)}`}>
-                          {task.priority === 'high' ? 'Haute' : task.priority === 'medium' ? 'Moyenne' : 'Faible'}
+                          {task.priority === 'high' ? 'High' : task.priority === 'medium' ? 'Medium' : 'Low'}
                         </span>
                       </td>
 
                       <td className="px-8 py-6 whitespace-nowrap">
                         <div className="text-slate-800 text-sm flex items-center gap-1.5 font-bold">
                           <Calendar size={14} className="text-slate-500" strokeWidth={2.5} />
-                          {task.dueDate ? new Date(task.dueDate).toLocaleDateString('fr-FR') : '--/--/----'}
+                          {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US') : '--/--/----'}
                         </div>
                       </td>
 
@@ -239,14 +237,14 @@ export default function Tasks() {
                           <button 
                             onClick={() => handleEditClick(task)} 
                             className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                            title="Modifier"
+                            title="Edit"
                           >
                             <Edit3 size={16} strokeWidth={2.5} />
                           </button>
                           <button 
                             onClick={() => deleteTask(task._id)} 
                             className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                            title="Supprimer"
+                            title="Delete"
                           >
                             <Trash2 size={16} strokeWidth={2.5} />
                           </button>
@@ -273,15 +271,15 @@ export default function Tasks() {
               <X size={18} strokeWidth={2.5}/>
             </button>
             <h3 className="text-lg font-black text-slate-900 mb-5">
-              {editingTask ? 'Modifier la tâche' : 'Créer une nouvelle tâche'}
+              {editingTask ? 'Edit Task' : 'Create New Task'}
             </h3>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Titre de la mission</label>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Task Title</label>
                 <input 
                   type="text" 
-                  placeholder="Ex: Intégration de la maquette Figma" 
+                  placeholder="e.g., Integrate Figma Design" 
                   required
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                   value={formData.title} 
@@ -291,34 +289,34 @@ export default function Tasks() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Projet lié</label>
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Linked Project</label>
                   <select 
                     required 
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     value={formData.projectId} 
                     onChange={(e) => setFormData({...formData, projectId: e.target.value})}
                   >
-                    <option value="">Sélectionner</option>
+                    <option value="">Select Project</option>
                     {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Priorité</label>
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Priority</label>
                   <select 
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     value={formData.priority} 
                     onChange={(e) => setFormData({...formData, priority: e.target.value})}
                   >
-                    <option value="low">Faible</option>
-                    <option value="medium">Moyenne</option>
-                    <option value="high">Haute</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Échéance</label>
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Due Date</label>
                   <input 
                     type="date" 
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
@@ -327,7 +325,7 @@ export default function Tasks() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Heures estimées</label>
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Estimated Hours</label>
                   <input 
                     type="number" 
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
@@ -343,13 +341,13 @@ export default function Tasks() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-900 rounded-lg text-sm font-bold transition-all"
                 >
-                  Annuler
+                  Cancel
                 </button>
                 <button 
                   type="submit" 
                   className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold shadow-sm transition-all"
                 >
-                  {editingTask ? 'Mettre à jour' : 'Enregistrer'}
+                  {editingTask ? 'Update' : 'Save'}
                 </button>
               </div>
             </form>
