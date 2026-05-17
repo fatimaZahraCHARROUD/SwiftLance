@@ -11,7 +11,6 @@ const [projects, setProjects] = useState([]);
 const [clients, setClients] = useState([]);
 const [tasks, setTasks] = useState([]);
 
-//fetch
 const fetchProjects = async () => {
   const res = await fetch(API_URL, {
     headers: {

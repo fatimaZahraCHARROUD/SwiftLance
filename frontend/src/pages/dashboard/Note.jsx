@@ -16,7 +16,6 @@ export default function Note() {
     title: '', content: '', projectId: ''
   });
 
-  // 1. Fetch Data: Kan-jibou l-projects o l-notes
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -45,12 +44,10 @@ export default function Note() {
 
   useEffect(() => { fetchData(); }, []);
 
-  // 2. Submit: Hna fin t-fixat l-mushkila dyal l-Add
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     
-    // T-كد bli l-URL hwa /api/notes/ (machi ghir /api)
     const url = editingNote 
       ? `http://localhost:5000/api/notes/${editingNote._id}` 
       : 'http://localhost:5000/api/notes';
@@ -71,7 +68,7 @@ export default function Note() {
         setIsModalOpen(false);
         setEditingNote(null);
         setFormData({ title: '', content: '', projectId: '' });
-        fetchData(); // Refresh l-list
+        fetchData(); 
       } else {
         const errorData = await response.json();
         alert("Erreur backend: " + (errorData.message || "Erreur de validation"));
@@ -118,7 +115,7 @@ export default function Note() {
 
   return (
     <div className="min-h-screen bg-[#fcfcfd] font-sans pb-12 pt-8">
-      {/* Search o Button Add */}
+      
       <div className="px-12 mb-10 flex justify-between items-center gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
@@ -136,7 +133,6 @@ export default function Note() {
         </button>
       </div>
 
-      {/* Table Section */}
       <div className="px-12">
         <div className="bg-white border border-slate-100 rounded-[2.5rem] shadow-sm overflow-hidden">
           <table className="w-full text-left">
@@ -169,7 +165,7 @@ export default function Note() {
                   </td>
                   <td className="px-10 py-7 text-right">
                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                      {/* Bouton Affichage Description */}
+                      
                       <button onClick={() => setViewingNote(note)} className="p-3 text-emerald-500 hover:bg-emerald-50 rounded-xl transition-all">
                         <Eye size={18} />
                       </button>
@@ -188,7 +184,6 @@ export default function Note() {
         </div>
       </div>
 
-      {/* Modal Add / Edit */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
           <div className="bg-white rounded-[3.5rem] w-full max-w-xl p-12 shadow-2xl relative animate-in zoom-in-95">
@@ -225,7 +220,6 @@ export default function Note() {
         </div>
       )}
 
-      {/* View Modal (Description) */}
       {viewingNote && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
           <div className="bg-white rounded-[3.5rem] w-full max-w-xl p-12 shadow-2xl relative">
