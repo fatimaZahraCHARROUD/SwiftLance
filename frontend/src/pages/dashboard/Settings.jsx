@@ -83,7 +83,6 @@ export default function Settings() {
 
         <form onSubmit={handleUpdateProfile} className="space-y-8">
 
-          {/* Avatar Preview */}
           <div className="flex flex-col items-center gap-4">
             <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-100 shadow">
             

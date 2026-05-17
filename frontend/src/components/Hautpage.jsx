@@ -12,7 +12,6 @@ function Hautpage() {
   const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
-  
     const savedName = localStorage.getItem("userName") || "";
     const savedEmail = localStorage.getItem("userEmail") || "";
     const savedRole = localStorage.getItem("userRole") || "developer";
@@ -23,7 +22,7 @@ function Hautpage() {
       role: savedRole,
     });
 
-    // 2. Logic dyal l-counter (ghadi n-fettchiw ch-hal men project urgent)
+    // Logic du compteur : filtre uniquement les projets imminents (J-2 ou moins)
     const fetchUrgentCount = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/projects', {
@@ -35,11 +34,22 @@ function Hautpage() {
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
         const urgentOnes = projects.filter(project => {
-          if (!project.endDate) return false;
-          const pDate = new Date(project.endDate);
+          // 1. التشييك على الـ Status بجميع الحالات: إذا كان المشروع ديجا Done ما يتحسبش ف الـ Badge
+          const currentStatus = project.status ? project.status.toLowerCase().trim() : '';
+          if (currentStatus === 'done' || currentStatus === 'completed') {
+            return false; 
+          }
+
+          // 2. قراءة التاريخ الصحيح من الـ Database (التوافق بين deadline و endDate)
+          const projectDeadline = project.deadline || project.endDate;
+          if (!projectDeadline) return false;
+
+          const pDate = new Date(projectDeadline);
           const pDay = new Date(pDate.getFullYear(), pDate.getMonth(), pDate.getDate()).getTime();
           const diffDays = Math.floor((pDay - today) / (1000 * 60 * 60 * 24));
-          return diffDays <= 3; // L-projets li ba9i lihom 3 yam awla t-7er9at lihom l-mer9a
+          
+          // Strictement entre 0 et 2 jours restants (les projets dépassés avec diffDays < 0 sont exclus)
+          return diffDays >= 0 && diffDays <= 2; 
         });
 
         setNotificationCount(urgentOnes.length);
@@ -65,7 +75,7 @@ function Hautpage() {
         >
           <Bell size={20} />
           
-          {/* L-Badge l-7mer */}
+          {/* Badge rouge dynamique */}
           {notificationCount > 0 && (
             <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white border-2 border-white">
               {notificationCount}
