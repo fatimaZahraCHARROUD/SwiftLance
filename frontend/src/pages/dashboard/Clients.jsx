@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Trash2, Edit, UserPlus, Building2, User, X } from 'lucide-react';
+import { Trash2, Edit, UserPlus, Building2, User, X, Search } from 'lucide-react';
 
 export default function Clients() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingClient, setEditingClient] = useState(null); 9
+  const [editingClient, setEditingClient] = useState(null); 
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -103,19 +104,29 @@ export default function Clients() {
     }
   };
 
+  const filteredClients = clients.filter(c => 
+    (c.fullName || c.name || "").toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) return (
-    <div className="flex items-center justify-center h-full p-10">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3327db]"></div>
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600"></div>
     </div>
   );
 
   return (
-    <div className="p-6 relative animate-in fade-in duration-500">
+    <div className="min-h-screen bg-[#f8fafc] font-sans pb-16 pt-12">
       
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">My Clients</h2>
-          <p className="text-slate-500 text-sm">Manage your customer relationships and details.</p>
+      {/* --- Action Bar (بار البحث واضح وزر إضافة العميل بنفس الستايل) --- */}
+      <div className="w-full px-12 mx-auto mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="relative w-full sm:max-w-md">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+          <input 
+            type="text" 
+            placeholder="Rechercher des clients..." 
+            className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition-all text-sm text-slate-900 font-semibold placeholder:text-slate-400"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         <button 
           onClick={() => {
@@ -123,48 +134,136 @@ export default function Clients() {
             setFormData({ fullName: '', email: '', phone: '', address: '', type: 'Individual' });
             setIsModalOpen(true);
           }}
-          className="bg-[#3327db] text-white px-5 py-2.5 rounded-xl hover:bg-opacity-90 shadow-lg shadow-blue-200 transition flex items-center gap-2 font-semibold"
+          className="w-full sm:w-auto bg-[#4f46e5] hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm transition-all text-sm"
         >
-          <UserPlus size={18} /> Add Client
+          <UserPlus size={16} /> Ajouter un client
         </button>
       </div>
+
+      {/* --- Main Table Container (Borders & Ktaba awdah متناسقة مع الـ Tasks) --- */}
+      <div className="w-full px-12 mx-auto">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/70 border-b border-slate-200">
+                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest">Client Name</th>
+                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest">Type</th>
+                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest">Contact</th>
+                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest text-center">Address</th>
+                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {filteredClients.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="px-8 py-16 text-center text-sm font-bold text-slate-400">
+                      Aucun client trouvé
+                    </td>
+                  </tr>
+                ) : (
+                  filteredClients.map((client) => (
+                    <tr key={client._id} className="hover:bg-slate-50/50 transition-colors h-16">
+                      
+                      {/* الإسم والأيقونة */}
+                      <td className="px-8 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="w-7 h-7 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center justify-center text-indigo-600">
+                            {client.type === 'Company' ? <Building2 size={14} /> : <User size={14} />}
+                          </div>
+                          <span className="font-extrabold text-slate-900 text-sm">{client.fullName || client.name}</span>
+                        </div>
+                      </td>
+
+                      {/* نوع العميل الـ Badge */}
+                      <td className="px-8 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-1 text-[10px] font-extrabold rounded-md border uppercase tracking-wider ${
+                          client.type === 'Company' 
+                            ? 'bg-purple-50 text-purple-700 border-purple-200' 
+                            : 'bg-blue-50 text-blue-700 border-blue-200'
+                        }`}>
+                          {client.type || "Individual"}
+                        </span>
+                      </td>
+
+                      {/* معلومات الإتصال واضحة وبلون داكن وعريض */}
+                      <td className="px-8 py-4 whitespace-nowrap text-sm">
+                        <div className="text-slate-800 font-semibold">{client.email}</div>
+                        <div className="text-slate-500 text-xs font-medium">{client.phone || "No phone"}</div>
+                      </td>
+
+                      {/* العنوان */}
+                      <td className="px-8 py-4 whitespace-nowrap text-center text-sm font-semibold text-slate-700">
+                        <span className="italic">{client.address || "---"}</span>
+                      </td>
+
+                      {/* أزرار التحكم ظاهرة وواضحة دائماً وبألوان متباينة */}
+                      <td className="px-8 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end gap-4 text-slate-500">
+                          <button 
+                            onClick={() => handleEditClick(client)}
+                            className="hover:text-indigo-600 transition-colors"
+                            title="Modifier"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button 
+                            onClick={() => deleteClient(client._id)}
+                            className="hover:text-red-600 transition-colors"
+                            title="Supprimer"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Add / Edit Modal --- */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-              <h3 className="text-xl font-bold text-slate-800">
-                {editingClient ? 'Edit Client' : 'New Client Info'}
-              </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-red-500 transition">
-                <X size={20}/>
-              </button>
-            </div>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl relative border border-slate-200">
+            <button 
+              onClick={() => setIsModalOpen(false)} 
+              className="absolute top-4 right-4 p-1 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              <X size={18} />
+            </button>
+            <h3 className="text-base font-black text-slate-900 mb-5">
+              {editingClient ? 'Edit Client' : 'New Client Info'}
+            </h3>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-1 ml-1">Full Name</label>
+                <label className="block text-xs font-extrabold uppercase text-slate-500 mb-1 ml-1">Full Name</label>
                 <input 
                   type="text" required
-                  className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:border-indigo-500 transition-all"
                   value={formData.fullName}
                   onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-1 ml-1">Email Address</label>
+                <label className="block text-xs font-extrabold uppercase text-slate-500 mb-1 ml-1">Email Address</label>
                 <input 
                   type="email" required
-                  className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:border-indigo-500 transition-all"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-1 ml-1">Client Type</label>
+                <label className="block text-xs font-extrabold uppercase text-slate-500 mb-1 ml-1">Client Type</label>
                 <select 
-                  className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 bg-white font-semibold focus:outline-none focus:border-indigo-500 transition-all"
                   value={formData.type}
                   onChange={(e) => setFormData({...formData, type: e.target.value})}
                 >
@@ -175,19 +274,19 @@ export default function Clients() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-400 mb-1 ml-1">Phone</label>
+                  <label className="block text-xs font-extrabold uppercase text-slate-500 mb-1 ml-1">Phone</label>
                   <input 
                     type="text"
-                    className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:border-indigo-500 transition-all"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-400 mb-1 ml-1">City/Address</label>
+                  <label className="block text-xs font-extrabold uppercase text-slate-500 mb-1 ml-1">City/Address</label>
                   <input 
                     type="text"
-                    className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:border-indigo-500 transition-all"
                     value={formData.address}
                     onChange={(e) => setFormData({...formData, address: e.target.value})}
                   />
@@ -195,85 +294,19 @@ export default function Clients() {
               </div>
 
               <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 font-bold text-slate-500 hover:bg-slate-50 rounded-xl transition">Cancel</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-2.5 font-bold text-slate-500 hover:bg-slate-50 rounded-lg transition-all border border-slate-200">Cancel</button>
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="flex-1 py-3 rounded-xl font-bold text-white bg-[#3327db] shadow-lg shadow-blue-100 disabled:bg-slate-300 transition"
+                  className="flex-1 py-2.5 bg-[#4f46e5] hover:bg-indigo-700 text-white rounded-lg text-sm font-bold shadow-sm transition-all disabled:bg-slate-300"
                 >
-                  {isSubmitting ? "Saving..." : (editingClient ? "Update Client" : "Save Client")}
+                  {isSubmitting ? "Saving..." : (editingClient ? "Update" : "Save")}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-50/50 text-slate-400 text-[11px] uppercase tracking-widest font-bold">
-              <th className="p-5">Client Name</th>
-              <th className="p-5">Type</th>
-              <th className="p-5">Contact</th>
-              <th className="p-5 text-center">Address</th>
-              <th className="p-5 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {clients.length > 0 ? (
-              clients.map((client) => (
-                <tr key={client._id} className="hover:bg-slate-50/80 transition-colors group">
-                  <td className="p-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#3327db]">
-                        {client.type === 'Company' ? <Building2 size={18} /> : <User size={18} />}
-                      </div>
-                      <span className="font-bold text-slate-700">{client.fullName || client.name}</span>
-                    </div>
-                  </td>
-                  <td className="p-5">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      client.type === 'Company' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
-                    }`}>
-                      {client.type || "Individual"}
-                    </span>
-                  </td>
-                  <td className="p-5 text-sm">
-                    <div className="text-slate-600 font-medium">{client.email}</div>
-                    <div className="text-slate-400 text-xs">{client.phone || "No phone"}</div>
-                  </td>
-                  <td className="p-5 text-center">
-                    <span className="text-slate-500 text-sm italic">{client.address || "---"}</span>
-                  </td>
-                  <td className="p-5">
-                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button 
-                        onClick={() => handleEditClick(client)}
-                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button 
-                        onClick={() => deleteClient(client._id)}
-                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="p-20 text-center text-slate-400">
-                  <p>Aucun client trouvé.</p>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }
