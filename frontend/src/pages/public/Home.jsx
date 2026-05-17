@@ -100,6 +100,7 @@ const Navbar =() =>{
   );
 }
 const Home = () => {
+    const navigate = useNavigate();
 
  
 
@@ -120,8 +121,8 @@ const Home = () => {
     },
     {
       icon: Clock,
-      title: 'Task Timer',
-      description: 'Track billable hours automatically — no more guessing or manual time logs.',
+      title: 'Task Management',
+      description: 'Organize tasks, track progress, and keep your team aligned in one workspace.',
       color: 'bg-green-50',
       iconColor: 'text-green-600'
     },
@@ -179,8 +180,8 @@ const Home = () => {
     'Tasks scattered across 5 different apps'
   ];
 
-  const beforeItems = ['Excel spreadsheets', 'WhatsApp chaos', 'Lost files & notes', 'Manual time tracking', 'Late payments'];
-  const afterItems = ['Unified dashboard', 'Centralized communication', 'Smart document storage', 'Automated timers', 'Payment reminders'];
+  const beforeItems = ['Excel spreadsheets', 'WhatsApp chaos', 'Lost files & notes', 'Traditional task coordination', 'Late payments'];
+  const afterItems = ['Unified dashboard', 'Centralized communication', 'Smart document storage', 'Smart workflow automation', 'Payment reminders'];
 
   return (
     <div className="min-h-screen bg-white">
@@ -204,39 +205,47 @@ const Home = () => {
               <p className="text-xl text-gray-600 mb-8">
                 Save time, organize your freelance work, and get paid faster. Stop juggling multiple tools — everything you need is here.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <button className="bg-gradient-primary text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2">
-                  🚀 Get Started Free
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-arrow-right"
-                    aria-hidden="true"
-                  >
-                    <path d="M5 12h14"></path>
-                    <path d="m12 5 7 7-7 7"></path>
-                  </svg>
-                </button>
-                <button className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-gray-400 transition-colors">
-                  🔐 Live Demo
-                </button>
-              </div>
+             <div className="flex flex-col sm:flex-row gap-4 mb-6">
+  <button
+    onClick={() => navigate("/login")}
+    className="bg-gradient-primary text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+  >
+    Get Started Free
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="lucide lucide-arrow-right"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14"></path>
+      <path d="m12 5 7 7-7 7"></path>
+    </svg>
+  </button>
+
+  <button
+    onClick={() =>
+      document
+        .getElementById("transformation")
+        ?.scrollIntoView({ behavior: "smooth" })
+    }
+    className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-gray-400 transition-colors"
+  >
+    Why SwiftLance ?
+  </button>
+</div>
               <div className="flex items-center gap-4 text-sm text-gray-500">
                 <div className="flex items-center gap-1">
                   <CheckCircle size={16} className="text-green-500" />
                   <span>No credit card required</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <CheckCircle size={16} className="text-green-500" />
-                  <span>14-day free trial</span>
-                </div>
+                
               </div>
               <div className="mt-6 pt-6 border-t border-gray-100">
                 <p className="text-sm text-gray-500">
@@ -298,7 +307,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              The freelancer's reality 😫
+              The freelancer's reality 
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               You waste more time managing work than actually doing work.
@@ -379,7 +388,7 @@ const Home = () => {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="bg-red-50 px-6 py-4 border-b border-red-100">
                 <h3 className="text-xl font-semibold text-red-700 flex items-center gap-2">
-                  😵 Before SwiftLance
+                  Before SwiftLance
                 </h3>
               </div>
               <div className="p-6 space-y-3">
@@ -394,7 +403,7 @@ const Home = () => {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="bg-green-50 px-6 py-4 border-b border-green-100">
                 <h3 className="text-xl font-semibold text-green-700 flex items-center gap-2">
-                  😎 After SwiftLance
+                   After SwiftLance
                 </h3>
               </div>
               <div className="p-6 space-y-3">
@@ -485,8 +494,8 @@ const Home = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
 
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2">
-              🚀 Get Started Free
+            <button onClick={()=>navigate("/register")} className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2">
+               Get Started Free
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="18"
@@ -505,14 +514,14 @@ const Home = () => {
               </svg>
             </button>
 
-            <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
-              🔐 Login Now
+            <button onClick={()=>navigate("/login")} className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
+               Login Now
             </button>
 
           </div>
 
           <p className="text-blue-100 text-sm mt-6">
-            No credit card required • 14-day free trial • Cancel anytime
+            No credit card required 
           </p>
 
         </div>

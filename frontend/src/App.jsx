@@ -31,7 +31,7 @@ function App() {
         {/* 🔓 PUBLIC PART */}
         {/*<Route path="/" element={<PublicLayout />}>*/}
           <Route index element={<Home />} />
-          <Route path="login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
         {/*</Route>*/}
