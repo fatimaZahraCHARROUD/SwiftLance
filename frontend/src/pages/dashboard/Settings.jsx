@@ -41,9 +41,9 @@ export default function Settings() {
   // 5. FONCTION : Déclenchée lors du clic sur le bouton "Save Changes" (Soumission)
   const handleUpdateProfile = async (e) => {
     e.preventDefault(); // Empêche le rechargement automatique de la page
-    setLoading(true);     // Active l'état de chargement (le bouton affichera "Saving changes...")
-    setMessage("");      // Efface les anciens messages de l'écran
-    setIsError(false);   // Réinitialise l'état d'erreur
+    setLoading(true);    
+    setMessage("");      
+    setIsError(false);   
 
     try {
       // Récupération du jeton de sécurité (Token) pour prouver au serveur qu'on est connecté
@@ -70,10 +70,10 @@ export default function Settings() {
 
       // CAS D'ERREUR : Si le serveur renvoie un problème (ex: email déjà utilisé)
       if (!response.ok) {
-        setMessage(data.message || "Update failed"); // Affiche le message d'erreur du serveur
-        setIsError(true);                            // Change la couleur de l'alerte en rouge
-        setLoading(false);                           // Arrête le chargement du bouton
-        return;                                      // Arrête immédiatement la fonction ici
+        setMessage(data.message || "Update failed"); 
+        setIsError(true);                           
+        setLoading(false);                        
+        return;                                      
       }
 
       // CAS DE SUCCÈS : Si le serveur confirme que la modification est enregistrée
@@ -82,15 +82,14 @@ export default function Settings() {
       localStorage.setItem("userEmail", data.email);
       localStorage.setItem("userRole", data.role || "developer");
 
-      setMessage("Profile updated successfully ✅"); // Message de confirmation vert
-      window.location.reload();                      // Recharge la page pour actualiser le site (ex: le nom dans la barre de navigation)
+      setMessage("Profile updated successfully ✅"); 
+      window.location.reload();                      
     } catch (error) {
-      // En cas de coupure internet ou si le serveur est complètement éteint
       setMessage("Server error ❌");
       setIsError(true);
     }
 
-    setLoading(false); // Désactive le chargement à la fin de l'action
+    setLoading(false); 
   };
 
   return (
@@ -156,8 +155,6 @@ export default function Settings() {
                 />
               </div>
             </div>
-
-            {/* Champ : Rôle Professionnel (Menu déroulant) */}
             <div>
               <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2">
                 Professional Role

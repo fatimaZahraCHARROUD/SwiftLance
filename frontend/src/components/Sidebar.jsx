@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-// Importation de NavLink (pour gérer les liens actifs) et useNavigate (pour la redirection)
 import { NavLink, useNavigate } from "react-router-dom"; 
-// Importation de l'objet styles contenant les classes CSS isolées (CSS Modules)
 import styles from './Sidebar.module.css';
-// Importation de l'ensemble des icônes nécessaires à la navigation
 import {
   LayoutDashboard, StickyNote, CheckSquare,
   Wallet, Calendar, Users, Briefcase,
@@ -14,11 +11,10 @@ import {
 function Sidebar({ isCollapsed, setIsCollapsed }) {  
   const navigate = useNavigate();
  
-  // 1. FONCTION : Génère dynamiquement les classes CSS de chaque lien de navigation
   const getStyle = ({ isActive }) => {
-    let base = styles.link; // Classe de base commune à tous les liens
-    if (isActive) base += ` ${styles.active}`; // Ajoute le style "actif" si l'utilisateur est sur cette page
-    if (isCollapsed) base += ` ${styles.collapsedLink}`; // Ajoute un style d'ajustement si la barre est repliée
+    let base = styles.link; 
+    if (isActive) base += ` ${styles.active}`; 
+    if (isCollapsed) base += ` ${styles.collapsedLink}`; 
     return base;
   };
 

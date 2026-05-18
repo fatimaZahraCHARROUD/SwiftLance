@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from 'react';
 // Importation des icônes depuis lucide-react pour illustrer l'interface
 import { 
-  Plus,          // Icône "+" : Utilisée pour le bouton de création d'une nouvelle tâche ("Add a task").
-  Calendar,      // Icône "Calendrier" : Affichée à côté de la date limite (Due Date) dans le tableau.
-  CheckCircle2,  // Icône "Coche cochée" : S'affiche en vert quand une tâche a le statut 'done' (terminée).
-  Trash2,        // Icône "Poubelle" : Placée dans la colonne Actions pour supprimer définitivement une tâche.
-  Edit3,         // Icône "Crayon" : Placée dans la colonne Actions pour ouvrir la modale en mode modification.
-  Search,        // Icône "Loupe" : Positionnée à l'intérieur de la barre de recherche en haut à gauche.
-  Circle,        // Icône "Rond vide" : S'affiche à côté des tâches en attente ('todo') pour pouvoir les cocher.
-  X,             // Icône "Croix" : Bouton de fermeture situé en haut à droite de la boîte de dialogue (Popup).
-  Clock          // Icône "Horloge" : Affichée à côté du nombre d'heures estimées ("Estimated Hours").
+  Plus, Calendar, CheckCircle2, Trash2, Edit3, Search, Circle, X, Clock 
 } from 'lucide-react';
 
 export default function Tasks() {
@@ -28,7 +20,6 @@ export default function Tasks() {
 
   // --- ACTIONS API (FONCTIONS ASYNCHRONES) ---
 
-  // 1. Récupération des données (Tâches et Projets) simultanément depuis le serveur
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -37,7 +28,6 @@ export default function Tasks() {
         'Content-Type': 'application/json'
       };
 
-      // Promise.all exécute les deux requêtes en parallèle pour gagner du temps
       const [resTasks, resProjects] = await Promise.all([
         fetch('http://localhost:5000/api/tasks', { headers }),
         fetch('http://localhost:5000/api/projects', { headers })
@@ -54,7 +44,6 @@ export default function Tasks() {
     }
   };
 
-  // Chargement automatique des données au montage du composant
   useEffect(() => { fetchData(); }, []);
 
   // 2. Soumission du formulaire (Ajout ou Modification d'une tâche)
@@ -76,15 +65,15 @@ export default function Tasks() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData) // Transformation des données du formulaire en texte JSON
+        body: JSON.stringify(formData) 
       });
 
       if (response.ok) {
-        setIsModalOpen(false); // Ferme la boîte de dialogue
-        setEditingTask(null); // Réinitialise le mode édition
+        setIsModalOpen(false); 
+        setEditingTask(null); 
         // Remise à zéro complète du formulaire
         setFormData({ title: '', projectId: '', status: 'todo', priority: 'medium', dueDate: '', estimatedHours: 0 });
-        fetchData(); // Rafraîchit le tableau avec la nouvelle liste
+        fetchData(); 
       } else {
         const errorData = await response.json();
         alert("Error: " + (errorData.message || "Unable to save task"));
@@ -93,8 +82,6 @@ export default function Tasks() {
       alert("Network error: Unable to connect to the server");
     }
   };
-
-  // 3. Inversion rapide du statut d'une tâche (A faire <-> Terminé) au clic sur le rond
   const toggleTaskStatus = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
@@ -110,7 +97,6 @@ export default function Tasks() {
         body: JSON.stringify({ 
           ...taskToUpdate, 
           status: newStatus,
-          // Extraction propre de l'identifiant du projet pour éviter les bugs d'objets imbriqués
           projectId: taskToUpdate.projectId?._id || taskToUpdate.projectId
         })
       });
@@ -157,7 +143,6 @@ export default function Tasks() {
     t.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Attribution des couleurs Tailwind en fonction du niveau d'urgence/priorité
   const getPriorityStyle = (priority) => {
     switch (priority) {
       case 'high': return 'bg-red-50 text-red-900 border-red-200';
@@ -226,46 +211,38 @@ export default function Tasks() {
                   filteredTasks.map(task => (
                     <tr key={task._id} className={`hover:bg-slate-50/50 transition-colors h-20 ${task.status === 'done' ? 'bg-slate-50/40 opacity-75' : ''}`}>
                       
-                      {/* Colonne : Statut (Bouton rond) + Titre de la tâche */}
                       <td className="px-8 py-6 whitespace-nowrap">
                         <div className="flex items-center gap-4">
                           <button 
                             onClick={() => toggleTaskStatus(task._id, task.status)}
                             className={`transition-all transform active:scale-75 ${task.status === 'done' ? 'text-green-600' : 'text-slate-400 hover:text-indigo-600'}`}
                           >
-                            {/* L'icône change (Coche verte ou Rond vide) selon le statut */}
                             {task.status === 'done' ? <CheckCircle2 size={22} strokeWidth={2.5} /> : <Circle size={22} strokeWidth={2.5} />}
                           </button>
-                          {/* Si la tâche est validée, le texte est barré et estompé (`line-through`) */}
                           <span className={`font-extrabold text-slate-900 text-[14px] ${task.status === 'done' ? 'line-through text-slate-400 font-semibold' : ''}`}>
                             {task.title}
                           </span>
                         </div>
                       </td>
 
-                      {/* Colonne : Projet associé (Recherche du nom de projet par ID, affiche "General" si aucun) */}
                       <td className="px-8 py-6 whitespace-nowrap">
                         <span className="inline-flex items-center px-2.5 py-1 bg-blue-50 text-blue-900 text-[11px] font-extrabold rounded-md border border-blue-200 uppercase tracking-wider">
                           {projects.find(p => p._id === (task.projectId?._id || task.projectId))?.title || "General"}
                         </span>
                       </td>
 
-                      {/* Colonne : Niveau de priorité avec badge de couleur dynamique */}
                       <td className="px-8 py-6 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-1 text-[11px] font-extrabold rounded-md border uppercase tracking-wider ${getPriorityStyle(task.priority)}`}>
                           {task.priority === 'high' ? 'High' : task.priority === 'medium' ? 'Medium' : 'Low'}
                         </span>
                       </td>
 
-                      {/* Colonne : Date d'échéance formatée au standard américain */}
                       <td className="px-8 py-6 whitespace-nowrap">
                         <div className="text-slate-800 text-sm flex items-center gap-1.5 font-bold">
                           <Calendar size={14} className="text-slate-500" strokeWidth={2.5} />
                           {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US') : '--/--/----'}
                         </div>
                       </td>
-
-                      {/* Colonne : Temps estimé en heures */}
                       <td className="px-8 py-6 whitespace-nowrap">
                         <div className="text-slate-800 text-sm flex items-center gap-1.5 font-bold">
                           <Clock size={14} className="text-slate-500" strokeWidth={2.5} />

@@ -92,15 +92,12 @@ export default function Clients() {
     try {
       const token = localStorage.getItem('token');
       
-      // STRUCTURE DYNAMIQUE : Choix de l'URL en fonction du mode (Ajout global ou ID spécifique)
       const url = editingClient 
         ? `http://localhost:5000/api/clients/${editingClient._id}` 
         : 'http://localhost:5000/api/clients';
       
-      // STRUCTURE DYNAMIQUE : Choix de la méthode HTTP (PUT pour modification, POST pour création)
       const method = editingClient ? 'PUT' : 'POST';
 
-      // Envoi de la requête au backend avec les données du formulaire converties en texte JSON
       const response = await fetch(url, {
         method: method,
         headers: { 
@@ -123,7 +120,7 @@ export default function Clients() {
     } catch (err) {
       alert("Network error");
     } finally {
-      setIsSubmitting(false); // Libération du bouton après traitement
+      setIsSubmitting(false); 
     }
   };
 
@@ -177,7 +174,6 @@ export default function Clients() {
           />
         </div>
         
-        {/* Bouton pour ouvrir la Modal en mode création pure (Reset des états) */}
         <button 
           onClick={() => {
             setEditingClient(null);
@@ -205,7 +201,6 @@ export default function Clients() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {/* Condition : Si aucun client ne correspond au filtrage, on affiche un message d'absence */}
                 {filteredClients.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="px-8 py-16 text-center text-sm font-bold text-slate-400">
@@ -213,22 +208,19 @@ export default function Clients() {
                     </td>
                   </tr>
                 ) : (
-                  // Boucle (Map) pour transformer chaque objet client en ligne de tableau HTML (<tr>)
                   filteredClients.map((client) => (
                     <tr key={client._id} className="hover:bg-slate-50/50 transition-colors h-16">
                       
-                      {/* Colonne 1 : Nom complet et Icône conditionnelle selon le type */}
                       <td className="px-8 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <div className="w-7 h-7 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center justify-center text-indigo-600">
-                            {/* Rendu conditionnel de l'icône : Entreprise ou Individu */}
+                         
                             {client.type === 'Company' ? <Building2 size={14} /> : <User size={14} />}
                           </div>
                           <span className="font-extrabold text-slate-900 text-sm">{client.fullName || client.name}</span>
                         </div>
                       </td>
 
-                      {/* Colonne 2 : Badge de type stylisé via Tailwind */}
                       <td className="px-8 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-1 text-[10px] font-extrabold rounded-md border uppercase tracking-wider ${
                           client.type === 'Company' 
@@ -319,7 +311,6 @@ export default function Clients() {
                 />
               </div>
 
-              {/* Champ : Menu déroulant pour le Type */}
               <div>
                 <label className="block text-xs font-extrabold uppercase text-slate-500 mb-1 ml-1">Client Type</label>
                 <select 
