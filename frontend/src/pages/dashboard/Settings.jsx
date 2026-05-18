@@ -1,54 +1,64 @@
 import React, { useState, useEffect } from "react";
+// Importation des icônes depuis la bibliothèque lucide-react pour habiller le formulaire
 import { User, Mail, Briefcase, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function Settings() {
+  // 1. ÉTAT (STATE) : Stocke les valeurs saisies dans le formulaire (Nom, Email, Rôle)
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    role: "developer",
+    role: "developer", // "developer" est la valeur choisie par défaut
   });
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
+  // 2. ÉTATS (STATES) : Gèrent l'affichage et le comportement de l'interface
+  const [loading, setLoading] = useState(false); // Bloque le bouton et change son texte pendant l'envoi
+  const [message, setMessage] = useState("");   // Stocke le texte du message de notification (Succès ou Erreur)
+  const [isError, setIsError] = useState(false);  // Indique si le message est une erreur (pour changer la couleur en rouge)
 
+  // 3. EFFET AU MONTAGE (Exécuté uniquement à l'ouverture de la page)
   useEffect(() => {
+    // Récupération des données de l'utilisateur stockées dans le navigateur (Local Storage)
     const savedName = localStorage.getItem("userName") || "";
     const savedEmail = localStorage.getItem("userEmail") || "";
     const savedRole = localStorage.getItem("userRole") || "developer";
 
+    // Remplissage automatique du formulaire avec les données récupérées
     setFormData({
       fullName: savedName,
       email: savedEmail,
       role: savedRole,
     });
-  }, []);
+  }, []); // Le tableau de dépendances vide [] fait que l'effet ne s'exécute qu'une seule fois
 
+  // 4. FONCTION : S'exécute à chaque fois que l'utilisateur écrit un caractère dans un champ
   const handleChange = (e) => {
     setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+      ...formData, // On garde intactes les autres données du formulaire
+      [e.target.name]: e.target.value, // On met à jour uniquement le champ qui est en train de changer
     });
   };
 
+  // 5. FONCTION : Déclenchée lors du clic sur le bouton "Save Changes" (Soumission)
   const handleUpdateProfile = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-    setIsError(false);
+    e.preventDefault(); // Empêche le rechargement automatique de la page
+    setLoading(true);     // Active l'état de chargement (le bouton affichera "Saving changes...")
+    setMessage("");      // Efface les anciens messages de l'écran
+    setIsError(false);   // Réinitialise l'état d'erreur
 
     try {
+      // Récupération du jeton de sécurité (Token) pour prouver au serveur qu'on est connecté
       const token = localStorage.getItem("token");
 
+      // Envoi de la requête HTTP PUT vers l'API Backend pour modifier le profil
       const response = await fetch(
         "http://localhost:5000/api/users/profile",
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Envoi du token dans les en-têtes
           },
-          body: JSON.stringify({
+          body: JSON.stringify({ // Transformation de l'objet JavaScript en texte JSON pour le réseau
             fullName: formData.fullName,
             email: formData.email,
             role: formData.role,
@@ -56,27 +66,31 @@ export default function Settings() {
         }
       );
 
-      const data = await response.json();
+      const data = await response.json(); // Transformation de la réponse texte du serveur en objet JS
 
+      // CAS D'ERREUR : Si le serveur renvoie un problème (ex: email déjà utilisé)
       if (!response.ok) {
-        setMessage(data.message || "Update failed");
-        setIsError(true);
-        setLoading(false);
-        return;
+        setMessage(data.message || "Update failed"); // Affiche le message d'erreur du serveur
+        setIsError(true);                            // Change la couleur de l'alerte en rouge
+        setLoading(false);                           // Arrête le chargement du bouton
+        return;                                      // Arrête immédiatement la fonction ici
       }
 
+      // CAS DE SUCCÈS : Si le serveur confirme que la modification est enregistrée
+      // On met à jour les nouvelles données dans le Local Storage du navigateur
       localStorage.setItem("userName", data.fullName);
       localStorage.setItem("userEmail", data.email);
       localStorage.setItem("userRole", data.role || "developer");
 
-      setMessage("Profile updated successfully ✅");
-      window.location.reload();
+      setMessage("Profile updated successfully ✅"); // Message de confirmation vert
+      window.location.reload();                      // Recharge la page pour actualiser le site (ex: le nom dans la barre de navigation)
     } catch (error) {
+      // En cas de coupure internet ou si le serveur est complètement éteint
       setMessage("Server error ❌");
       setIsError(true);
     }
 
-    setLoading(false);
+    setLoading(false); // Désactive le chargement à la fin de l'action
   };
 
   return (
@@ -84,7 +98,7 @@ export default function Settings() {
       <div className="w-full max-w-2xl px-12 mx-auto">
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8">
           
-          {/* Header Section */}
+          {/* Section d'en-tête (Titre et description de la page) */}
           <div className="mb-8">
             <h1 className="text-2xl font-[900] text-[#1B2559] tracking-tight">
               Profile Settings
@@ -96,7 +110,7 @@ export default function Settings() {
 
           <form onSubmit={handleUpdateProfile} className="space-y-6">
             
-            {/* Avatar Generation */}
+            {/* Section Avatar (Prend la première lettre du nom pour créer une image de profil) */}
             <div className="flex flex-col items-center justify-center pb-4 border-b border-slate-100">
               <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-indigo-50 shadow-sm">
                 <div className="w-full h-full bg-indigo-600 flex items-center justify-center text-white text-3xl font-black">
@@ -105,7 +119,7 @@ export default function Settings() {
               </div>
             </div>
 
-            {/* Full Name */}
+            {/* Champ : Nom Complet */}
             <div>
               <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2">
                 Full Name
@@ -116,7 +130,7 @@ export default function Settings() {
                   type="text"
                   name="fullName"
                   value={formData.fullName}
-                  onChange={handleChange}
+                  onChange={handleChange} // Applique la fonction de suivi de saisie
                   placeholder="Enter your full name"
                   required
                   className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition-all text-sm text-slate-900 font-semibold placeholder:text-slate-400"
@@ -124,7 +138,7 @@ export default function Settings() {
               </div>
             </div>
 
-            {/* Email Address */}
+            {/* Champ : Adresse Email */}
             <div>
               <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2">
                 Email Address
@@ -135,7 +149,7 @@ export default function Settings() {
                   type="email"
                   name="email"
                   value={formData.email}
-                  onChange={handleChange}
+                  onChange={handleChange} // Applique la fonction de suivi de saisie
                   placeholder="Enter your email"
                   required
                   className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition-all text-sm text-slate-900 font-semibold placeholder:text-slate-400"
@@ -143,7 +157,7 @@ export default function Settings() {
               </div>
             </div>
 
-            {/* Professional Role */}
+            {/* Champ : Rôle Professionnel (Menu déroulant) */}
             <div>
               <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2">
                 Professional Role
@@ -153,7 +167,7 @@ export default function Settings() {
                 <select
                   name="role"
                   value={formData.role}
-                  onChange={handleChange}
+                  onChange={handleChange} // Applique la fonction de suivi de saisie
                   className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition-all text-sm text-slate-900 font-semibold"
                 >
                   <option value="developer">Developer</option>
@@ -166,23 +180,25 @@ export default function Settings() {
               </div>
             </div>
 
-            {/* Dynamic Alerts */}
+            {/* Affichage conditionnel des Alertes (S'affiche uniquement s'il y a un message) */}
             {message && (
               <div className={`p-4 rounded-xl flex items-center gap-3 text-sm font-bold ${
                 isError ? "bg-red-50 text-red-900 border border-red-100" : "bg-emerald-50 text-emerald-900 border border-emerald-100"
               }`}>
+                {/* Icône dynamique : Alerte si erreur, coche de validation si succès */}
                 {isError ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
                 <span>{message}</span>
               </div>
             )}
 
-            {/* Submit Buttons */}
+            {/* Bouton de validation */}
             <div className="pt-2">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading} // Désactive le bouton pendant le chargement pour éviter les doubles clics
                 className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white py-3 rounded-xl font-bold shadow-sm active:scale-[0.99] transition-all text-sm flex items-center justify-center gap-2"
               >
+                {/* Le texte du bouton s'adapte dynamiquement selon l'état "loading" */}
                 {loading ? "Saving changes..." : "Save Changes"}
               </button>
             </div>
