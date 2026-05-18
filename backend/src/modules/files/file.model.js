@@ -23,7 +23,7 @@ const fileSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true }//created at , updatedat
 );
 
 module.exports = mongoose.model("File", fileSchema);

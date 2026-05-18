@@ -108,6 +108,7 @@ const getDeadlineColor = (date) => {
 
  const today = new Date();
 
+ //top 5 project with enddate future and not done
 const deadlines = projects
   .filter((p) => p.endDate) // only projects with deadline
   .filter((p) => p.status !== "done") // ignore finished projects
@@ -124,6 +125,7 @@ const deadlines = projects
 const revenuePaidByMonth = Array(12).fill(0);
 const revenueUnpaidByMonth = Array(12).fill(0);
 
+//remplir les tableau
 projects.forEach((p) => {
   if (!p.startDate) return;
 
@@ -140,16 +142,16 @@ projects.forEach((p) => {
 const maxRevenue = Math.max(
   ...revenuePaidByMonth,
   ...revenueUnpaidByMonth,
-  1
+  1 //default value if 2 arrays are empty (to avoid infinity)
 );
 
  
-
-  const yAxisSteps = 5;
+//create Y axe value ex: 0 200 300 .. depend on max value revenue
+  const yAxisSteps = 5;//highest value in your data, divide it into 5 equal intervals
 const stepValue = maxRevenue / yAxisSteps;
 const yLabels = Array.from({ length: yAxisSteps + 1 }, (_, i) =>
-  Math.round(stepValue * i)
-).reverse();
+  Math.round(stepValue * i) //Removes decimals
+).reverse(); //1000 500 300 0
 
 
 
@@ -228,8 +230,8 @@ const yLabels = Array.from({ length: yAxisSteps + 1 }, (_, i) =>
     {/* CHART AREA */}
     <div className="flex-1">
 <div className="h-64 flex items-end gap-3 border-l border-b border-gray-200 pl-3 pb-2 relative">
-          {revenuePaidByMonth.map((paid, index) => {
-          const unpaid = revenueUnpaidByMonth[index];
+          {revenuePaidByMonth.map((paid, index) => {//paid = revenue value, index = month number
+          const unpaid = revenueUnpaidByMonth[index];//unpaid of same month
 
           return (
             <div key={index} className="flex-1 flex flex-col items-center">

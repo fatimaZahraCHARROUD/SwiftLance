@@ -6,12 +6,12 @@ import {
 
 export default function Tasks() {
   // --- ÉTATS (STATES) ---
-  const [tasks, setTasks] = useState([]); // Liste globale des tâches récupérées du serveur
-  const [projects, setProjects] = useState([]); // Liste des projets pour lier une tâche à un projet
-  const [loading, setLoading] = useState(true); // Indicateur de chargement initial
-  const [isModalOpen, setIsModalOpen] = useState(false); // Contrôle de l'affichage de la boîte de dialogue (Popup)
-  const [searchTerm, setSearchTerm] = useState(""); // Chaîne de caractères tapée dans la barre de recherche
-  const [editingTask, setEditingTask] = useState(null); // Stocke la tâche en cours de modification (null si création)
+  const [tasks, setTasks] = useState([]); 
+  const [projects, setProjects] = useState([]); 
+  const [loading, setLoading] = useState(true);  
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [searchTerm, setSearchTerm] = useState("");  
+  const [editingTask, setEditingTask] = useState(null);  
 
   // État du formulaire contenant les champs nécessaires pour créer/modifier une tâche
   const [formData, setFormData] = useState({
@@ -46,12 +46,10 @@ export default function Tasks() {
 
   useEffect(() => { fetchData(); }, []);
 
-  // 2. Soumission du formulaire (Ajout ou Modification d'une tâche)
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Empêche le rechargement de la page HTML
+   const handleSubmit = async (e) => {
+    e.preventDefault();  
     const token = localStorage.getItem('token');
     
-    // Si editingTask existe, on modifie via PUT, sinon on crée via POST
     const url = editingTask 
       ? `http://localhost:5000/api/tasks/${editingTask._id}` 
       : 'http://localhost:5000/api/tasks';

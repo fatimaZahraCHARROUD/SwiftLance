@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
+        await mongoose.connect(process.env.MONGO_URI);//mongoos: convert objt into doc in db
 
         console.log("MongoDB connected successfully");
     } catch (error) {

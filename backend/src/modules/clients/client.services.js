@@ -24,7 +24,7 @@ exports.updateClient = async (id, data, userId) => {
     return await Client.findOneAndUpdate(
         { _id: id, createdBy: userId }, 
         data, 
-        { new: true }
+        { new: true }//return new client not old
     );
 };
 

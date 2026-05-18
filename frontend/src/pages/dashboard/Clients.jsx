@@ -3,25 +3,19 @@ import React, { useEffect, useState } from 'react';
 import { Trash2, Edit, UserPlus, Building2, User, X, Search } from 'lucide-react';
 
 export default function Clients() {
-  // --- ÉTATS (STATES) POUR LA GESTION DES DONNÉES ET DE L'INTERFACE ---
+   
+   const [clients, setClients] = useState([]);
   
-  // Stocke la liste des clients récupérés depuis le backend (Initialisé à tableau vide)
-  const [clients, setClients] = useState([]);
+   const [loading, setLoading] = useState(true);
   
-  // Gère l'affichage de l'animation de chargement (Spinner)
-  const [loading, setLoading] = useState(true);
-  
-  // Contrôle l'ouverture et la fermeture de la boîte de dialogue (Modal d'ajout/modification)
-  const [isModalOpen, setIsModalOpen] = useState(false);
+   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Désactive le bouton de validation pendant l'envoi des données au serveur
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Stocke le client sélectionné pour modification (null = Ajout, objet client = Modification)
-  const [editingClient, setEditingClient] = useState(null); 
+   const [editingClient, setEditingClient] = useState(null); 
   
-  // Stocke le texte saisi par l'utilisateur dans la barre de recherche
-  const [searchTerm, setSearchTerm] = useState("");
+   const [searchTerm, setSearchTerm] = useState("");
 
   // Stocke temporairement les valeurs des champs du formulaire
   const [formData, setFormData] = useState({
@@ -108,11 +102,10 @@ export default function Clients() {
       });
 
       if (response.ok) {
-        setIsModalOpen(false); // Fermeture de la modal
+        setIsModalOpen(false);  
         setEditingClient(null); // Réinitialisation du mode édition
-        // Reset complet des champs du formulaire
-        setFormData({ fullName: '', email: '', phone: '', address: '', type: 'Individual' });
-        fetchClients(); // Rafraîchissement en temps réel de la liste des clients
+         setFormData({ fullName: '', email: '', phone: '', address: '', type: 'Individual' });
+        fetchClients();  
       } else {
         const errorData = await response.json();
         alert("Error: " + (errorData.message || "Action impossible"));
@@ -131,13 +124,12 @@ export default function Clients() {
     
     try {
       const token = localStorage.getItem('token');
-      // Envoi d'une requête HTTP avec la méthode DELETE ciblant l'ID du client
-      const response = await fetch(`http://localhost:5000/api/clients/${id}`, {
+       const response = await fetch(`http://localhost:5000/api/clients/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
-      if (response.ok) fetchClients(); // Rechargement de la table si suppression réussie
+      if (response.ok) fetchClients();  
     } catch (err) {
       alert("Error during deletion");
     }
@@ -145,8 +137,7 @@ export default function Clients() {
 
   // --- FILTRAGE DES DONNÉES EN FRONTEND (Moteur de recherche local) ---
   const filteredClients = clients.filter(c => 
-    // Recherche insensible à la casse (Majuscules/Minuscules ignorées grâce à toLowerCase)
-    (c.fullName || "").toLowerCase().includes(searchTerm.toLowerCase())
+     (c.fullName || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // --- RENDU : ÉCRAN DE CHARGEMENT ---
