@@ -1,10 +1,12 @@
 require("dotenv").config(); 
 
+//import dependances
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./src/config/db");
 const path = require("path");
 
+// import routes
 const userRoutes = require("./src/modules/users/user.routes");
 const projectRoutes = require("./src/modules/projects/project.routes");
 const noteRoutes = require("./src/modules/notes/note.routes"); 
@@ -20,7 +22,7 @@ connectDB();
 
 // 3. Middlewares
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json()); //Allows Express to read JSON data from requests.
 
 // 4. Définition dyal les Routes
 app.use("/api/users", userRoutes);
@@ -29,7 +31,8 @@ app.use("/api/notes", noteRoutes);
 app.use("/api/clients", clientRoutes); 
 app.use("/api/tasks", taskRoutes);     
 app.use("/api/plannings", planningRoutes);
-// static folder for files
+// static folder for files : Cette ligne permet de rendre les fichiers accessibles publiquement: uploads/image.png
+//Pour permettre au frontend d’afficher ou télécharger les fichiers.
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/files", fileRoutes);

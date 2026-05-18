@@ -44,7 +44,6 @@ const [expandedNote, setExpandedNote] = useState(null);
     client: "",
   });
 
-  // ================= FETCH =================
   const fetchProjects = async () => {
     const res = await fetch(API_URL, {
       headers: {
@@ -132,20 +131,19 @@ const openFiles = async (project) => {
   setFilesOpen(true);
 };
 
-  // ================= FORM =================
- const handleChange = (e) => {
+
+const handleChange = (e) => {
   const { name, value } = e.target;
 
   setForm({
     ...form,
-    [name]:
+    [name]: //ex: paye:true
       name === "paye"
         ? value === "true"
         : value,
   });
 };
 
-  // ================= RESET =================
   const resetForm = () => {
     setForm({
       title: "",
@@ -159,14 +157,12 @@ const openFiles = async (project) => {
     });
   };
 
-  // ================= ADD =================
   const openAdd = () => {
     resetForm();
     setEditMode(false);
     setIsModalOpen(true);
   };
 
-  // ================= EDIT =================
   const openEdit = (p,id) => {
     console.log(p._id);
     setForm({
@@ -175,7 +171,7 @@ const openFiles = async (project) => {
       status: p.status,
       budget: p.budget,
       paye: p.paye || false,
-      startDate: p.startDate?.split("T")[0] || "",
+      startDate: p.startDate?.split("T")[0] || "", //"2026-05-17T10:30:00.000Z"
       endDate: p.endDate?.split("T")[0] || "",
       client: p.client?._id || "",
     });
@@ -185,15 +181,14 @@ const openFiles = async (project) => {
     setIsModalOpen(true);
   };
 
-// ================= INFO =================
+
   const openInfo = async (project) => {
 
     setSelectedProject(project);
 
     try {
 
-      // ===== FETCH NOTES =====
-      const notesRes = await fetch(
+       const notesRes = await fetch(
         `${NOTES_URL}/project/${project._id}`,
         {
           headers: {
@@ -255,8 +250,8 @@ const deleteTask = async (id) => {
   openInfo(selectedProject); // refresh details
 };
 
-  // ================= CREATE =================
-  const createProject = async () => {
+
+const createProject = async () => {
     await fetch(API_URL, {
       method: "POST",
       headers: {
@@ -271,7 +266,7 @@ const deleteTask = async (id) => {
     fetchProjects();
   };
 
-  // ================= UPDATE (FIXED) =================
+
   const updateProject = async () => {
     await fetch(`${API_URL}/${selectedId}`, {
       method: "PUT",
@@ -289,7 +284,7 @@ const deleteTask = async (id) => {
     fetchProjects(); // 🔥 IMPORTANT FIX
   };
 
-  // ================= DELETE =================
+
   const deleteProject = async (id) => {
     if (!confirm("Delete this project?")) return;
 
@@ -303,14 +298,14 @@ const deleteTask = async (id) => {
     fetchProjects();
   };
 
-  // ================= FILTER =================
+
   const filteredProjects =
     filter === "all"
       ? projects
       : projects.filter((p) => p.status === filter);
 
-  // ================= BADGE =================
-  const statusBadge = (status) => {
+
+      const statusBadge = (status) => {
     const styles = {
       planning: "bg-yellow-100 text-yellow-600",
       in_progress: "bg-blue-100 text-blue-600",
@@ -417,63 +412,109 @@ const deleteTask = async (id) => {
 
       {/* ================= MODAL ================= */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="bg-white w-[450px] p-6 rounded-xl relative">
+  <div className="fixed inset-0 z-50 bg-black/40 overflow-y-auto">
+    
+    <div className="min-h-screen flex justify-center px-4 py-6 sm:ml-64">
+      
+      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-4 sm:p-6 relative h-fit">
+        
+        <button
+          onClick={() => setIsModalOpen(false)}
+          className="absolute top-3 right-3"
+        >
+          <X />
+        </button>
 
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-3 right-3"
-            >
-              <X />
-            </button>
+        <h2 className="text-xl font-bold mb-4">
+          {editMode ? "Update" : "Add"} Project
+        </h2>
 
-            <h2 className="text-xl font-bold mb-4">
-              {editMode ? "Update" : "Add"} Project
-            </h2>
+        <input
+          name="title"
+          value={form.title}
+          onChange={handleChange}
+          className="w-full border p-2 mb-2 rounded-lg"
+          placeholder="Title"
+        />
 
-            <input name="title" value={form.title} onChange={handleChange} className="w-full border p-2 mb-2" placeholder="Title" />
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          className="w-full border p-2 mb-2 rounded-lg"
+        />
 
-            <textarea name="description" value={form.description} onChange={handleChange} className="w-full border p-2 mb-2" />
+        <select
+          name="status"
+          value={form.status}
+          onChange={handleChange}
+          className="w-full border p-2 mb-2 rounded-lg"
+        >
+          <option value="planning">Planning</option>
+          <option value="in_progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
 
-            <select name="status" value={form.status} onChange={handleChange} className="w-full border p-2 mb-2">
-              <option value="planning">Planning</option>
-              <option value="in_progress">In Progress</option>
-              <option value="done">Done</option>
-            </select>
+        <input
+          type="number"
+          name="budget"
+          value={form.budget}
+          onChange={handleChange}
+          className="w-full border p-2 mb-2 rounded-lg"
+        />
 
-            <input type="number" name="budget" value={form.budget} onChange={handleChange} className="w-full border p-2 mb-2" />
-            <select
-              name="paye"
-              value={form.paye}
-              onChange={handleChange}
-              className="w-full border p-2 mb-2"
-            >
-              <option value={false}>Non Payé</option>
-              <option value={true}>Payé</option>
-            </select>
-            <input type="date" name="startDate" value={form.startDate} onChange={handleChange} className="w-full border p-2 mb-2" />
+        <select
+          name="paye"
+          value={form.paye}
+          onChange={handleChange}
+          className="w-full border p-2 mb-2 rounded-lg"
+        >
+          <option value={false}>Non Payé</option>
+          <option value={true}>Payé</option>
+        </select>
 
-            <input type="date" name="endDate" value={form.endDate} onChange={handleChange} className="w-full border p-2 mb-2" />
+        <input
+          type="date"
+          name="startDate"
+          value={form.startDate}
+          onChange={handleChange}
+          className="w-full border p-2 mb-2 rounded-lg"
+        />
 
-            <select name="client" value={form.client} onChange={handleChange} className="w-full border p-2 mb-4">
-              <option value="">Select Client</option>
-              {clients.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.fullName}
-                </option>
-              ))}
-            </select>
+        <input
+          type="date"
+          name="endDate"
+          value={form.endDate}
+          onChange={handleChange}
+          className="w-full border p-2 mb-2 rounded-lg"
+        />
 
-            <button
-              onClick={editMode ? updateProject : createProject}
-              className="w-full bg-[#3327db] text-white py-2 rounded"
-            >
-              {editMode ? "Update" : "Create"}
-            </button>
+        <select
+          name="client"
+          value={form.client}
+          onChange={handleChange}
+          className="w-full border p-2 mb-4 rounded-lg"
+        >
+          <option value="">Select Client</option>
 
-          </div>
-        </div>
-      )}
+          {clients.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.fullName}
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={editMode ? updateProject : createProject}
+          className="w-full bg-[#3327db] text-white py-2 rounded-lg"
+        >
+          {editMode ? "Update" : "Create"}
+        </button>
+
+      </div>
+    </div>
+  </div>
+)}
 
 {filesOpen && selectedProject && (
   <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">

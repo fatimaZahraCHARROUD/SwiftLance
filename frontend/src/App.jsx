@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import PublicLayout from "./layouts/PublicLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 
@@ -28,15 +27,13 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* 🔓 PUBLIC PART */}
-        {/*<Route path="/" element={<PublicLayout />}>*/}
+        {/* PUBLIC PART */}
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-        {/*</Route>*/}
 
-        {/* 🔐 PRIVATE PART */}
+        {/*  PRIVATE PART */}
          <Route
           path="/app"
           element={

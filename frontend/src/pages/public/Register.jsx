@@ -93,7 +93,6 @@ export default function Register() {
     localStorage.setItem("userEmail", data.user.email);
     localStorage.setItem("userRole", data.user.role);
 
-    // redirect to dashboard مباشرة
     navigate("/app");
 
   } catch (error) {

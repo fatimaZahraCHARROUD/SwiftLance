@@ -24,7 +24,6 @@ export default function PlanningCalendar() {
 
   const token = localStorage.getItem("token");
 
-  // ================= FETCH =================
   const fetchPlannings = async () => {
     const res = await fetch(API_PLANNINGS, {
       headers: { Authorization: `Bearer ${token}` },
@@ -37,7 +36,6 @@ export default function PlanningCalendar() {
     fetchPlannings();
   }, []);
 
-  // ================= CRUD =================
   const addPlanning = async () => {
     const isEdit = !!editItem;
 
@@ -90,7 +88,7 @@ export default function PlanningCalendar() {
     setShowForm(true);
   };
 
-  // ================= CALENDAR =================
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -99,12 +97,14 @@ export default function PlanningCalendar() {
 
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
+  //2026-05-17
   const getDateStr = (day) =>
     `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(
       2,
       "0"
     )}`;
 
+//This function filters planning items by date.
   const getItemsForDay = (day) => {
     const dateStr = getDateStr(day);
     return plannings.filter((p) => p.date?.slice(0, 10) === dateStr);
@@ -117,18 +117,17 @@ export default function PlanningCalendar() {
     month === today.getMonth() &&
     day === today.getDate();
 
-  // ================= GROUP TAGS =================
-  const groupTags = (items) => {
+
+    //This function counts how many items exist for each tag/category.
+    const groupTags = (items) => {
     return items.reduce((acc, item) => {
       acc[item.tag] = (acc[item.tag] || 0) + 1;
       return acc;
     }, {});
   };
 
-  // ================= UI =================
   return (
-    <div className="h-screen w-full bg-white flex flex-col px-8 py-6 overflow-hidden">
-
+<div className="h-screen w-full bg-white flex flex-col px-3 sm:px-6 lg:px-8 py-4 overflow-hidden">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold text-blue-600">
@@ -164,8 +163,7 @@ export default function PlanningCalendar() {
       </h2>
 
       {/* CALENDAR */}
-      <div className="flex-1 grid grid-cols-7 gap-2">
-
+<div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-2 overflow-auto">
         {Array.from({ length: firstDay }).map((_, i) => (
           <div key={i}></div>
         ))}
@@ -182,13 +180,14 @@ export default function PlanningCalendar() {
                 setShowModal(true);
               }}
               className={`
-                border rounded-lg p-2
-                flex flex-col justify-between
-                hover:border-blue-400 hover:shadow
-                transition cursor-pointer
-                overflow-hidden
-                ${isToday(day) ? "bg-blue-50 border-blue-500" : ""}
-              `}
+  border rounded-lg p-2 min-h-[90px]
+  flex flex-col justify-between
+  hover:border-blue-400 hover:shadow
+  transition cursor-pointer
+  overflow-hidden
+  text-xs sm:text-sm
+  ${isToday(day) ? "bg-blue-50 border-blue-500" : ""}
+`}
             >
               <div className="flex justify-between">
                 <span className="font-bold text-blue-600">{day}</span>
@@ -218,7 +217,7 @@ export default function PlanningCalendar() {
         })}
       </div>
 
-      {/* ================= MODAL ================= */}
+
       {showModal && selectedDay && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
           <div className="bg-white w-[550px] p-5 rounded-lg relative">
@@ -285,7 +284,7 @@ export default function PlanningCalendar() {
         </div>
       )}
 
-      {/* ================= FORM MODAL ================= */}
+
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
           <div className="bg-white w-[400px] p-4 rounded-lg">
@@ -338,7 +337,7 @@ export default function PlanningCalendar() {
         </div>
       )}
 
-      {/* ================= DRAWER ================= */}
+
       {drawerItem && (
         <div className="fixed right-0 top-0 h-full w-[350px] bg-white border-l p-4">
 

@@ -7,10 +7,10 @@ const fileController = require("./file.controller");
 
 const auth = require("../../middleware/auth.middleware");
 
-// ================= AUTH =================
 router.use(auth);
 
-// ================= MULTER =================
+//this function defines HOW and WHERE files are stored
+//rules
 const storage = multer.diskStorage({
 
   destination: (req, file, cb) => {
@@ -22,21 +22,18 @@ const storage = multer.diskStorage({
   },
 
 });
-
+//This creates the actual middleware used in routes :Use this storage strategy when handling file uploads.
+//engine
 const upload = multer({ storage });
 
-// ================= ROUTES =================
+
 
 // GET FILES
 router.get("/", fileController.getFiles);
 router.get("/project/:projectId", fileController.getFilesByProject);
 
 // CREATE FILE
-router.post(
-  "/",
-  upload.single("file"),
-  fileController.createFile
-);
+router.post( "/", upload.single("file"), fileController.createFile);
 
 // DELETE FILE
 router.delete("/:id", fileController.deleteFile);

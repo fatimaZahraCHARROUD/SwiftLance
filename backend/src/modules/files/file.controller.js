@@ -1,6 +1,5 @@
 const fileService = require("./file.services");
 
-// ================= CREATE FILE =================
 const createFile = async (req, res) => {
   try {
 
@@ -37,7 +36,6 @@ const createFile = async (req, res) => {
   }
 };
 
-// ================= GET FILES =================
 const getFiles = async (req, res) => {
   try {
 
@@ -62,7 +60,6 @@ const getFilesByProject = async (req, res) => {
   }
 };
 
-// ================= DELETE FILE =================
 const deleteFile = async (req, res) => {
   try {
 

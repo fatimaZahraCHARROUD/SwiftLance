@@ -97,6 +97,7 @@ const stats = [
   },
 ];
 const getDeadlineColor = (date) => {
+  //return in milisecond so /1000*60 ....
   const diffDays = Math.ceil((date - new Date()) / (1000 * 60 * 60 * 24));
 
   if (diffDays <= 3) return "text-red-500";
@@ -142,20 +143,7 @@ const maxRevenue = Math.max(
   1
 );
 
-  const progressProjects = [
-    {
-      title: "E-commerce Website",
-      progress: 80,
-    },
-    {
-      title: "Delivery App",
-      progress: 55,
-    },
-    {
-      title: "CRM Platform",
-      progress: 35,
-    },
-  ];
+ 
 
   const yAxisSteps = 5;
 const stepValue = maxRevenue / yAxisSteps;
@@ -239,7 +227,8 @@ const yLabels = Array.from({ length: yAxisSteps + 1 }, (_, i) =>
 
     {/* CHART AREA */}
     <div className="flex-1">
-<div className="h-64 flex items-end gap-3 border-l border-b border-gray-200 pl-3 pb-2 relative">        {revenuePaidByMonth.map((paid, index) => {
+<div className="h-64 flex items-end gap-3 border-l border-b border-gray-200 pl-3 pb-2 relative">
+          {revenuePaidByMonth.map((paid, index) => {
           const unpaid = revenueUnpaidByMonth[index];
 
           return (

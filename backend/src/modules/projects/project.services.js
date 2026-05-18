@@ -11,7 +11,7 @@ exports.createProject = async (data, userId) => {
 // Get all projects (user-based)
 exports.getProjects = async (user_id) => {
   return await Project.find({ createdBy: user_id })
-    .populate("client", "fullName email");
+    .populate("client", "fullName email");//only name & email
 };
 
 // Get single project

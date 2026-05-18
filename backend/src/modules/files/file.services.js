@@ -9,8 +9,8 @@ const createFile = async (data) => {
 
 const getAllFiles = async () => {
   return await File.find()
-    .populate("project")
-    .sort({ createdAt: -1 });
+    .populate("project") //replaces project ID with full project info
+    .sort({ createdAt: -1 });//newest files first
 };
 
 const getFilesByProject = async (projectId) => {
@@ -26,21 +26,21 @@ const deleteFile = async (id) => {
     throw new Error("File not found");
   }
 
-  // 🔥 extract filename from URL
+  //  extract filename from URL
   const filePath = path.join(
     __dirname,
     "../../../uploads/",
     file.url.split("/uploads/")[1]
   );
 
-  // 🔥 delete from disk
+  //  delete from disk
   fs.unlink(filePath, (err) => {
     if (err) {
       console.log("File delete error:", err);
     }
   });
 
-  // 🔥 delete from DB
+  //  delete from DB
   return await File.findByIdAndDelete(id);
 };
 

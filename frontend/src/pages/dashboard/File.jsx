@@ -22,7 +22,6 @@ function Files() {
   // FILE INPUT REF
   const fileInputRef = useRef(null);
 
-  // ================= FETCH FILES =================
   const fetchFiles = async () => {
     try {
       const res = await fetch(FILES_URL, {
@@ -38,7 +37,6 @@ function Files() {
     }
   };
 
-  // ================= FETCH PROJECTS =================
   const fetchProjects = async () => {
     try {
       const res = await fetch(PROJECTS_URL, {
@@ -54,7 +52,6 @@ function Files() {
     }
   };
 
-  // ================= LOAD =================
   useEffect(() => {
     const load = async () => {
       setLoading(true);
@@ -68,7 +65,6 @@ function Files() {
     load();
   }, []);
 
-  // ================= ICON =================
   const getIcon = (type) => {
     switch (type) {
       case "image":
@@ -82,8 +78,8 @@ function Files() {
     }
   };
 
-  // ================= UPLOAD =================
-const uploadFile = async () => {
+
+  const uploadFile = async () => {
 
   if (!selectedFile || !selectedProject) {
     return alert("Select file and project");
@@ -132,8 +128,8 @@ const uploadFile = async () => {
     alert(err.message);
   }
 };
-  // ================= DELETE =================
-  const deleteFile = async (id) => {
+
+const deleteFile = async (id) => {
     if (!window.confirm("Delete this file?")) return;
 
     try {
@@ -150,43 +146,43 @@ const uploadFile = async () => {
     }
   };
 
-  // ================= OPEN FILE =================
+
   const openFile = (file) => {
     window.open(file.url, "_blank");
   };
 
-  return (
-    <div className="p-6">
-
+   return (
+    <div className="p-3 sm:p-4 md:p-6 min-h-screen ">
+      
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
           Files
         </h1>
       </div>
 
       {/* UPLOAD SECTION */}
-      <div className="bg-white p-5 rounded-2xl shadow mb-6">
-
-        <h2 className="font-semibold mb-4">
+      <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
+        
+        <h2 className="font-semibold text-lg mb-4 text-gray-700">
           Upload File
         </h2>
 
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
           {/* FILE INPUT */}
           <input
             ref={fileInputRef}
             type="file"
             onChange={(e) => setSelectedFile(e.target.files[0])}
-            className="border p-2 rounded-xl"
+            className="border border-gray-200 p-3 rounded-xl text-sm w-full"
           />
 
           {/* PROJECT SELECT */}
           <select
             value={selectedProject}
             onChange={(e) => setSelectedProject(e.target.value)}
-            className="border p-2 rounded-xl"
+            className="border border-gray-200 p-3 rounded-xl text-sm w-full"
           >
             <option value="">
               Select Project
@@ -199,44 +195,55 @@ const uploadFile = async () => {
             ))}
           </select>
 
-          {/* UPLOAD BUTTON */}
+          {/* BUTTON */}
           <button
             onClick={uploadFile}
-            className="bg-blue-600 text-white rounded-xl flex items-center justify-center gap-2 hover:bg-blue-700"
+            className="bg-blue-600 text-white rounded-xl flex items-center justify-center gap-2 hover:bg-blue-700 transition-all py-3 font-medium w-full"
           >
             <Upload size={18} />
             Upload
           </button>
-
         </div>
       </div>
 
-      {/* FILES */}
+      {/* LOADING */}
       {loading ? (
-        <p>Loading...</p>
+        <div className="flex justify-center items-center py-20">
+          <p className="text-gray-500 text-lg">
+            Loading...
+          </p>
+        </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+          
           {files.map((file) => (
             <div
               key={file._id}
               onClick={() => openFile(file)}
-              className="bg-white p-4 rounded-2xl shadow hover:shadow-md transition cursor-pointer"
+              className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group"
             >
 
               {/* TOP */}
-              <div className="flex justify-between items-center mb-3">
+              <div className="flex justify-between items-start gap-3 mb-4">
 
-                <div className="flex items-center gap-2">
+                {/* LEFT */}
+                <div className="flex items-start gap-3 flex-1 min-w-0">
 
-                  {getIcon(file.type)}
+                  <div className="mt-1">
+                    {getIcon(file.type)}
+                  </div>
 
-                  <span className="font-medium">
-  {file.name.length > 25
-    ? file.name.slice(0, 25) + "..."
-    : file.name}
-</span>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-gray-800 text-sm sm:text-base break-words">
+                      {file.name.length > 35
+                        ? file.name.slice(0, 35) + "..."
+                        : file.name}
+                    </h3>
 
+                    <p className="text-xs text-gray-400 mt-1">
+                      Click to open
+                    </p>
+                  </div>
                 </div>
 
                 {/* DELETE */}
@@ -245,31 +252,39 @@ const uploadFile = async () => {
                     e.stopPropagation();
                     deleteFile(file._id);
                   }}
-                  className="text-red-500 hover:bg-red-100 p-1 rounded-lg"
+                  className="text-red-500 hover:bg-red-100 p-2 rounded-lg transition"
                 >
                   <Trash2 size={16} />
                 </button>
-
               </div>
 
               {/* PROJECT */}
-              <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">
-                {file.project?.title || "No project"}
-              </span>
-
+              <div className="flex items-center justify-between">
+                <span className="text-xs bg-slate-100 text-slate-700 px-3 py-1 rounded-full truncate max-w-full">
+                  {file.project?.title || "No project"}
+                </span>
+              </div>
             </div>
           ))}
-
         </div>
       )}
 
       {/* EMPTY */}
       {!loading && files.length === 0 && (
-        <div className="text-center text-gray-400 mt-10">
-          No files uploaded yet
+        <div className="text-center py-20">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 max-w-md mx-auto">
+            <File size={50} className="mx-auto text-gray-300 mb-4" />
+
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              No files uploaded
+            </h3>
+
+            <p className="text-gray-400 text-sm">
+              Upload your first file to start managing documents.
+            </p>
+          </div>
         </div>
       )}
-
     </div>
   );
 }

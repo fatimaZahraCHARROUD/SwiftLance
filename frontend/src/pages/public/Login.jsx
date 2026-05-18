@@ -17,7 +17,7 @@ export default function Login() {
     const newErrors = {};
     if (!email) {
       newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!/\S+@\S+\.\S+/.test(email)) {// ex user@gmail.com
       newErrors.email = "Email is invalid";
     }
     if (!password) {
@@ -26,6 +26,9 @@ export default function Login() {
       newErrors.password = "Password must be at least 4 characters";
     }
     setErrors(newErrors);
+    //This returns an array of all keys in the object
+    // ["email", "password"]
+    //true if valid , false no
     return Object.keys(newErrors).length === 0;
   };
 
@@ -39,9 +42,12 @@ export default function Login() {
   try {
     const res = await fetch("http://localhost:5000/api/users/login", {
       method: "POST",
+      //We are telling the backend that we are sending JSON data.
       headers: {
         "Content-Type": "application/json",
       },
+      // HTTP only accepts strings → so we convert object → JSON string
+      //"{\"email\":\"test@gmail.com\",\"password\":\"123456\"}"
       body: JSON.stringify({
         email,
         password,
