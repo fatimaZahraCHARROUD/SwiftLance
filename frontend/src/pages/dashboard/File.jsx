@@ -7,8 +7,8 @@ import {
   File,
 } from "lucide-react";
 
-const FILES_URL = "http://localhost:5000/api/files";
-const PROJECTS_URL = "http://localhost:5000/api/projects";
+const FILES_URL = import.meta.env.VITE_API_URL +"/api/files";
+const PROJECTS_URL = import.meta.env.VITE_API_URL +"/api/projects";
 
 function Files() {
   const [files, setFiles] = useState([]);

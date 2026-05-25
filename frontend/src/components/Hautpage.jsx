@@ -33,7 +33,7 @@ function Hautpage() {
     const fetchUrgentCount = async () => {
       try {
         // Appel API vers le backend pour récupérer la liste complète des projets
-        const response = await fetch('http://localhost:5000/api/projects', {
+        const response = await fetch(import.meta.env.VITE_API_URL +'/api/projects', {
           // Envoi du token d'authentification dans les en-têtes (Headers)
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });

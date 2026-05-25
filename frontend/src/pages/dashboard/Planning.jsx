@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X, Plus, Info, Trash2, Edit } from "lucide-react";
 
-const API_PLANNINGS = "http://localhost:5000/api/plannings";
+const API_PLANNINGS = import.meta.env.VITE_API_URL +"/api/plannings";
 
 export default function PlanningCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());

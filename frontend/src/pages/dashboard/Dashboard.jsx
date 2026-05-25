@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-const API_URL = "http://localhost:5000/api/projects";
-const CLIENTS_URL = "http://localhost:5000/api/clients";
-const TASKS_URL = "http://localhost:5000/api/tasks";
+const API_URL = import.meta.env.VITE_API_URL +"/api/projects";
+const CLIENTS_URL = import.meta.env.VITE_API_URL +"/api/clients";
+const TASKS_URL = import.meta.env.VITE_API_URL +"/api/tasks";
 
 export default function Dashboard() {
   const navigate = useNavigate();

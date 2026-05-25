@@ -33,7 +33,7 @@ export default function Clients() {
       const token = localStorage.getItem('token');
       
       // Envoi d'une requête HTTP GET asynchrone vers l'API Backend
-      const res = await fetch('http://localhost:5000/api/clients', {
+      const res = await fetch(import.meta.env.VITE_API_URL +'/api/clients', {
         headers: { 
           // Envoi du token pour prouver que l'utilisateur est connecté et autorisé
           'Authorization': `Bearer ${token}`,
@@ -87,8 +87,8 @@ export default function Clients() {
       const token = localStorage.getItem('token');
       
       const url = editingClient 
-        ? `http://localhost:5000/api/clients/${editingClient._id}` 
-        : 'http://localhost:5000/api/clients';
+        ? import.meta.env.VITE_API_URL +`/api/clients/${editingClient._id}` 
+        : import.meta.env.VITE_API_URL +'/api/clients';
       
       const method = editingClient ? 'PUT' : 'POST';
 
@@ -124,7 +124,7 @@ export default function Clients() {
     
     try {
       const token = localStorage.getItem('token');
-       const response = await fetch(`http://localhost:5000/api/clients/${id}`, {
+       const response = await fetch(import.meta.env.VITE_API_URL +`/api/clients/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

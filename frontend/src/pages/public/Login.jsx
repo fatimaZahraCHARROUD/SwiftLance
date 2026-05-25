@@ -40,7 +40,7 @@ export default function Login() {
   setIsLoading(true);
 
   try {
-    const res = await fetch("http://localhost:5000/api/users/login", {
+    const res = await fetch(import.meta.env.VITE_API_URL +"/api/users/login", {
       method: "POST",
       //We are telling the backend that we are sending JSON data.
       headers: {

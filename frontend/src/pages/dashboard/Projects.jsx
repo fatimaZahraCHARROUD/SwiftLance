@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Pencil, Trash2, Plus, X, Info, File } from "lucide-react";
 
-const API_URL = "http://localhost:5000/api/projects";
-const CLIENTS_URL = "http://localhost:5000/api/clients";
-const NOTES_URL = "http://localhost:5000/api/notes";
-const TASKS_URL = "http://localhost:5000/api/tasks";
-const FILES_URL = "http://localhost:5000/api/files";
+const API_URL = import.meta.env.VITE_API_URL +"/api/projects";
+const CLIENTS_URL = import.meta.env.VITE_API_URL +"/api/clients";
+const NOTES_URL = import.meta.env.VITE_API_URL +"/api/notes";
+const TASKS_URL = import.meta.env.VITE_API_URL +"/api/tasks";
+const FILES_URL = import.meta.env.VITE_API_URL +"/api/files";
 
 function Projects() {
   const [projects, setProjects] = useState([]);

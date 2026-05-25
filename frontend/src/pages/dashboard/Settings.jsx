@@ -51,7 +51,7 @@ export default function Settings() {
 
       // Envoi de la requête HTTP PUT vers l'API Backend pour modifier le profil
       const response = await fetch(
-        "http://localhost:5000/api/users/profile",
+        import.meta.env.VITE_API_URL +"/api/users/profile",
         {
           method: "PUT",
           headers: {

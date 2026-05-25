@@ -29,8 +29,8 @@ export default function Tasks() {
       };
 
       const [resTasks, resProjects] = await Promise.all([
-        fetch('http://localhost:5000/api/tasks', { headers }),
-        fetch('http://localhost:5000/api/projects', { headers })
+        fetch(import.meta.env.VITE_API_URL +'/api/tasks', { headers }),
+        fetch(import.meta.env.VITE_API_URL +'/api/projects', { headers })
       ]);
 
       if (resTasks.ok && resProjects.ok) {
@@ -51,8 +51,8 @@ export default function Tasks() {
     const token = localStorage.getItem('token');
     
     const url = editingTask 
-      ? `http://localhost:5000/api/tasks/${editingTask._id}` 
-      : 'http://localhost:5000/api/tasks';
+      ? import.meta.env.VITE_API_URL +`/api/tasks/${editingTask._id}` 
+      : import.meta.env.VITE_API_URL +'/api/tasks';
     
     const method = editingTask ? 'PUT' : 'POST';
     
@@ -86,7 +86,7 @@ export default function Tasks() {
       const newStatus = currentStatus === 'done' ? 'todo' : 'done';
       const taskToUpdate = tasks.find(t => t._id === id);
       
-      const response = await fetch(`http://localhost:5000/api/tasks/${id}`, {
+      const response = await fetch(import.meta.env.VITE_API_URL +`/api/tasks/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -109,7 +109,7 @@ export default function Tasks() {
     if(!window.confirm("Are you sure you want to delete this task?")) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/tasks/${id}`, {
+      const response = await fetch(import.meta.env.VITE_API_URL +`/api/tasks/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

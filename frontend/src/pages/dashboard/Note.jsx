@@ -25,8 +25,8 @@ export default function Note() {
       };
 
       const [resProjects, resNotes] = await Promise.all([
-        fetch('http://localhost:5000/api/projects', { headers }),
-        fetch('http://localhost:5000/api/notes', { headers }) 
+        fetch(import.meta.env.VITE_API_URL +'/api/projects', { headers }),
+        fetch(import.meta.env.VITE_API_URL +'/api/notes', { headers }) 
       ]);
 
       if (resProjects.ok && resNotes.ok) {
@@ -47,8 +47,8 @@ export default function Note() {
     const token = localStorage.getItem('token');
     
     const url = editingNote 
-      ? `http://localhost:5000/api/notes/${editingNote._id}` 
-      : 'http://localhost:5000/api/notes';
+      ? import.meta.env.VITE_API_URL +`/api/notes/${editingNote._id}` 
+      : import.meta.env.VITE_API_URL +'/api/notes';
     
     const method = editingNote ? 'PUT' : 'POST';
 
@@ -80,7 +80,7 @@ export default function Note() {
     if (!window.confirm("Are you sure you want to delete this note?")) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/notes/${id}`, {
+      const response = await fetch(import.meta.env.VITE_API_URL +`/api/notes/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
