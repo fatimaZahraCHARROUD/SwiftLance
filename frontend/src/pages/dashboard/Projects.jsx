@@ -120,32 +120,7 @@ const uploadProjectFile = async () => {
     setUploading(false); // 🔥 STOP LOADING
   }
 };
-const uploadProjectFile = async () => {
-  if (!selectedFile || !selectedProject) {
-    return alert("Select file");
-  }
 
-  const formData = new FormData();
-  formData.append("file", selectedFile);
-  formData.append("project", selectedProject._id);
-
-  const res = await fetch(FILES_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    body: formData,
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) return alert(data.message);
-
-  setSelectedFile(null);
-  if (fileInputRef.current) fileInputRef.current.value = "";
-
-  fetchProjectFiles(selectedProject._id);
-};
 const deleteProjectFile = async (id) => {
   if (!window.confirm("Delete file?")) return;
 
