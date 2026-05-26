@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Pencil, Trash2, Plus, X, Info, File } from "lucide-react";
+import { Pencil, Trash2,Search, Plus, X, Info, File } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL +"/api/projects";
 const CLIENTS_URL = import.meta.env.VITE_API_URL +"/api/clients";
@@ -11,7 +11,7 @@ function Projects() {
   const [projects, setProjects] = useState([]);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
-
+const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -308,11 +308,14 @@ const createProject = async () => {
   };
 
 
-  const filteredProjects =
-    filter === "all"
-      ? projects
-      : projects.filter((p) => p.status === filter);
-
+ const filteredProjects =
+  projects
+    .filter((p) =>
+      filter === "all" ? true : p.status === filter
+    )
+    .filter((p) =>
+      p.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
       const statusBadge = (status) => {
     const styles = {
@@ -331,17 +334,53 @@ const createProject = async () => {
   return (
     <div className="p-6">
 
-      {/* HEADER */}
-      <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-bold">Projects</h2>
+{/* HEADER */}
+{/* HEADER */}
+<div className="px-12 mb-10">
 
-        <button
-          onClick={openAdd}
-          className="bg-[#3327db] text-white px-4 py-2 rounded-xl flex gap-2"
-        >
-          <Plus /> Add
-        </button>
-      </div>
+  <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+    Projects
+  </h1>
+
+  <p className="text-slate-500 mt-3 text-lg max-w-2xl">
+    Plan, organize, and track all your projects in one centralized workspace.
+  </p>
+
+</div>
+
+{/* ACTION BAR */}
+<div className="w-full px-12 mx-auto mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
+
+  {/* SEARCH */}
+  <div className="relative w-full sm:max-w-md">
+    <Search
+      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+      size={18}
+    />
+
+    <input
+      type="text"
+      placeholder="Search projects..."
+      className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500/20
+                 focus:border-indigo-500 shadow-sm transition-all
+                 text-sm text-slate-900 font-semibold placeholder:text-slate-400"
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+  </div>
+
+  {/* BUTTON */}
+  <button
+    onClick={openAdd}
+    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white
+               px-5 py-2.5 rounded-xl font-bold flex items-center justify-center
+               gap-2 shadow-sm transition-all text-sm active:scale-[0.98]"
+  >
+    <Plus size={16} />
+    Add Project
+  </button>
+
+</div>
 
       {/* ================= TABS ================= */}
       <div className="flex gap-3 mb-6">
@@ -369,9 +408,7 @@ const createProject = async () => {
 
   <div className="min-h-[300px] flex flex-col items-center justify-center bg-white rounded-2xl shadow-sm border border-gray-100">
     
-    <div className="text-6xl mb-4">
-      📁
-    </div>
+   
 
     <h3 className="text-xl font-bold text-gray-700 mb-2">
       No projects found
@@ -381,12 +418,7 @@ const createProject = async () => {
       Start by creating your first project
     </p>
 
-    <button
-      onClick={openAdd}
-      className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl transition"
-    >
-      + Create Project
-    </button>
+     
 
   </div>
 

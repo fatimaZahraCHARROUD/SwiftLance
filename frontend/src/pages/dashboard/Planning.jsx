@@ -128,39 +128,48 @@ export default function PlanningCalendar() {
 
   return (
 <div className="h-screen w-full bg-white flex flex-col px-3 sm:px-6 lg:px-8 py-4 overflow-hidden">
-      {/* HEADER */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold text-blue-600">
-          Planning Calendar
-        </h1>
+     {/* HEADER */}
+<div className="px-12 mb-6">
+  <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+    Planning Calendar
+  </h1>
 
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentDate(new Date(year, month - 1))}
-            className="px-3 py-1 border rounded"
-          >
-            Prev
-          </button>
+  <p className="text-slate-500 mt-2 text-lg max-w-2xl">
+    Organize your daily schedules, track tasks, and manage your planning efficiently.
+  </p>
+</div>
 
-          <button
-            onClick={() => setCurrentDate(new Date())}
-            className="px-3 py-1 bg-blue-600 text-white rounded"
-          >
-            Today
-          </button>
+{/* NAV CONTROLS */}
+<div className="w-full px-12 mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
 
-          <button
-            onClick={() => setCurrentDate(new Date(year, month + 1))}
-            className="px-3 py-1 border rounded"
-          >
-            Next
-          </button>
-        </div>
-      </div>
+  <div className="text-sm font-semibold text-slate-600">
+    {currentDate.toLocaleString("default", { month: "long" })} {year}
+  </div>
 
-      <h2 className="text-sm text-gray-600 mb-3">
-        {currentDate.toLocaleString("default", { month: "long" })} {year}
-      </h2>
+  <div className="flex gap-2">
+    <button
+      onClick={() => setCurrentDate(new Date(year, month - 1))}
+      className="px-4 py-2 border rounded-xl text-sm font-semibold hover:bg-slate-50"
+    >
+      Prev
+    </button>
+
+    <button
+      onClick={() => setCurrentDate(new Date())}
+      className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold"
+    >
+      Today
+    </button>
+
+    <button
+      onClick={() => setCurrentDate(new Date(year, month + 1))}
+      className="px-4 py-2 border rounded-xl text-sm font-semibold hover:bg-slate-50"
+    >
+      Next
+    </button>
+  </div>
+</div>
+ 
 
       {/* CALENDAR */}
 <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-2 overflow-auto">

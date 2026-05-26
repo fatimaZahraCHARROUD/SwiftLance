@@ -113,7 +113,16 @@ export default function Note() {
 
   return (
     <div className="min-h-screen bg-white font-sans pb-16 pt-12">
-      
+      {/* HEADER */}
+<div className="px-12 mb-10">
+  <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+    Notes
+  </h1>
+
+  <p className="text-slate-500 mt-3 text-lg max-w-2xl">
+    Organize project ideas, meeting summaries, and important team notes in one place.
+  </p>
+</div>
       {/* --- Action Bar (Perfect Match to Tasks) --- */}
       <div className="w-full px-12 mx-auto mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="relative w-full sm:max-w-md">

@@ -180,11 +180,15 @@ const filteredFiles = selectedProject
     <div className="p-3 sm:p-4 md:p-6 min-h-screen ">
       
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          Files
-        </h1>
-      </div>
+<div className="px-12 mb-10">
+  <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+    Files
+  </h1>
+
+  <p className="text-slate-500 mt-3 text-lg max-w-2xl">
+    Upload, manage, and access important project documents securely.
+  </p>
+</div>
 
       {/* FILTER SECTION */}
 <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
