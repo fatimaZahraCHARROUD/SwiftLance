@@ -15,10 +15,12 @@ const createFile = async (req, res) => {
     const fileData = {
       name: req.file.originalname,
 
-      url: req.file.path,
+      url: req.file.path || req.file.secure_url,
 
-      type: req.file.mimetype.split("/")[0],
-
+      type: req.file.mimetype
+        ? req.file.mimetype.split("/")[0]
+        : "file",
+        
       project: req.body.project,
     };
 

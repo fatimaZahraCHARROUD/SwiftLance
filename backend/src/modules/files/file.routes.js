@@ -24,8 +24,7 @@ const storage = new CloudinaryStorage({
       "jpeg",
       "png",
       "pdf",
-      "doc",
-      "docx",
+ 
     ],
   },
 });

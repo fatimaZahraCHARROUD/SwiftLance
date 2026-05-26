@@ -27,7 +27,7 @@ const [projectTasks, setProjectTasks] = useState([]);
 const [projectFiles, setProjectFiles] = useState([]);
 const [filesOpen, setFilesOpen] = useState(false);
 const [fileFormOpen, setFileFormOpen] = useState(false);
-
+const [uploading, setUploading] = useState(false);
 const fileInputRef = useRef(null);
 const [selectedFile, setSelectedFile] = useState(null);
 
@@ -86,6 +86,40 @@ const [expandedNote, setExpandedNote] = useState(null);
 };
 
 //files 
+const uploadProjectFile = async () => {
+  if (!selectedFile || !selectedProject) {
+    return alert("Select file");
+  }
+
+  setUploading(true); // 🔥 START LOADING
+
+  try {
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("project", selectedProject._id);
+
+    const res = await fetch(FILES_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) return alert(data.message);
+
+    // reset
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    await fetchProjectFiles(selectedProject._id);
+
+  } finally {
+    setUploading(false); // 🔥 STOP LOADING
+  }
+};
 const uploadProjectFile = async () => {
   if (!selectedFile || !selectedProject) {
     return alert("Select file");
@@ -569,12 +603,14 @@ const createProject = async () => {
           className="border p-2 flex-1"
         />
 
-        <button
-          onClick={uploadProjectFile}
-          className="bg-blue-600 text-white px-4 rounded"
-        >
-          Add
-        </button>
+    <button
+  onClick={uploadProjectFile}
+  disabled={uploading}
+  className="bg-blue-600 text-white px-4 rounded flex items-center justify-center gap-2"
+>
+  {uploading ? "Uploading..." : "Add"}
+</button>
+
       </div>
 
       {/* LIST */}
