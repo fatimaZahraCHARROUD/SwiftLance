@@ -16,9 +16,10 @@ function Files() {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedProject, setSelectedProject] = useState("");
-
+const [deletingId, setDeletingId] = useState(null);
   const [loading, setLoading] = useState(true);
-
+const [uploading, setUploading] = useState(false);
+const [successMessage, setSuccessMessage] = useState("");
   // FILE INPUT REF
   const fileInputRef = useRef(null);
 
@@ -87,6 +88,9 @@ function Files() {
 
   try {
 
+    setUploading(true);
+    setSuccessMessage("");
+
     const formData = new FormData();
 
     formData.append("file", selectedFile);
@@ -100,17 +104,13 @@ function Files() {
       body: formData,
     });
 
-    console.log("STATUS:", res.status);
-
     const data = await res.json();
 
-    console.log("DATA:", data);
-
     if (!res.ok) {
-      return alert(data.message);
+      throw new Error(data.message);
     }
 
-    alert("Uploaded successfully");
+    setSuccessMessage("✅ File uploaded successfully");
 
     setSelectedFile(null);
     setSelectedProject("");
@@ -119,32 +119,53 @@ function Files() {
       fileInputRef.current.value = "";
     }
 
-    fetchFiles();
+    await fetchFiles();
+
+    // hide success after 3 sec
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 3000);
 
   } catch (err) {
 
     console.log("FRONT ERROR:", err);
 
     alert(err.message);
+
+  } finally {
+
+    setUploading(false);
+
   }
 };
 
 const deleteFile = async (id) => {
-    if (!window.confirm("Delete this file?")) return;
 
-    try {
-      await fetch(`${FILES_URL}/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+  if (!window.confirm("Delete this file?")) return;
 
-      fetchFiles();
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  try {
+
+    setDeletingId(id);
+
+    await fetch(`${FILES_URL}/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    await fetchFiles();
+
+  } catch (err) {
+
+    console.log(err);
+
+  } finally {
+
+    setDeletingId(null);
+
+  }
+};
 
 
   const openFile = (file) => {
@@ -194,15 +215,40 @@ const deleteFile = async (id) => {
               </option>
             ))}
           </select>
+{uploading && (
+  <div className="text-sm text-blue-600 font-medium">
+    Uploading file, please wait...
+  </div>
+)}
 
+{successMessage && (
+  <div className="text-sm text-green-600 font-medium">
+    {successMessage}
+  </div>
+)}
           {/* BUTTON */}
           <button
-            onClick={uploadFile}
-            className="bg-blue-600 text-white rounded-xl flex items-center justify-center gap-2 hover:bg-blue-700 transition-all py-3 font-medium w-full"
-          >
-            <Upload size={18} />
-            Upload
-          </button>
+  onClick={uploadFile}
+  disabled={uploading}
+  className={`rounded-xl flex items-center justify-center gap-2 transition-all py-3 font-medium w-full text-white
+  ${
+    uploading
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-blue-600 hover:bg-blue-700"
+  }`}
+>
+  {uploading ? (
+    <>
+      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+      Uploading...
+    </>
+  ) : (
+    <>
+      <Upload size={18} />
+      Upload
+    </>
+  )}
+</button>
         </div>
       </div>
 
@@ -247,15 +293,25 @@ const deleteFile = async (id) => {
                 </div>
 
                 {/* DELETE */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteFile(file._id);
-                  }}
-                  className="text-red-500 hover:bg-red-100 p-2 rounded-lg transition"
-                >
-                  <Trash2 size={16} />
-                </button>
+               <button
+  onClick={(e) => {
+    e.stopPropagation();
+    deleteFile(file._id);
+  }}
+  disabled={deletingId === file._id}
+  className={`p-2 rounded-lg transition
+  ${
+    deletingId === file._id
+      ? "bg-gray-100 cursor-not-allowed"
+      : "text-red-500 hover:bg-red-100"
+  }`}
+>
+  {deletingId === file._id ? (
+    <div className="h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+  ) : (
+    <Trash2 size={16} />
+  )}
+</button>
               </div>
 
               {/* PROJECT */}
