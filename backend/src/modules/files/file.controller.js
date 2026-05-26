@@ -15,7 +15,7 @@ const createFile = async (req, res) => {
     const fileData = {
       name: req.file.originalname,
 
-      url: `http://localhost:5000/uploads/${req.file.filename}`,
+      url: req.file.path,
 
       type: req.file.mimetype.split("/")[0],
 

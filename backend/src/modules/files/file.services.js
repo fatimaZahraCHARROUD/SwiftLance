@@ -1,6 +1,4 @@
 const File = require("./file.model");
-const fs = require("fs");//module file system
-const path = require("path");
 
 
 const createFile = async (data) => {
@@ -20,27 +18,13 @@ const getFilesByProject = async (projectId) => {
 };
 
 const deleteFile = async (id) => {
+
   const file = await File.findById(id);
 
   if (!file) {
     throw new Error("File not found");
   }
 
-  //  extract filename from URL
-  const filePath = path.join(
-    __dirname,
-    "../../../uploads/",
-    file.url.split("/uploads/")[1]
-  );
-
-  //  delete from disk
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      console.log("File delete error:", err);
-    }
-  });
-
-  //  delete from DB
   return await File.findByIdAndDelete(id);
 };
 

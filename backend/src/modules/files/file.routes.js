@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const {
+  CloudinaryStorage,
+} = require("multer-storage-cloudinary");
 
+const cloudinary = require("../../config/cloudinary");
 const multer = require("multer");
 
 const fileController = require("./file.controller");
@@ -9,18 +13,21 @@ const auth = require("../../middleware/auth.middleware");
 
 router.use(auth);
 
-//this function defines HOW and WHERE files are stored
-//rules
-const storage = multer.diskStorage({
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
 
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
+  params: {
+    folder: "swiftlance-files",
+
+    allowed_formats: [
+      "jpg",
+      "jpeg",
+      "png",
+      "pdf",
+      "doc",
+      "docx",
+    ],
   },
-
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-
 });
 //This creates the actual middleware used in routes :Use this storage strategy when handling file uploads.
 //engine
