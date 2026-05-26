@@ -171,7 +171,11 @@ const deleteFile = async (id) => {
   const openFile = (file) => {
     window.open(file.url, "_blank");
   };
-
+const filteredFiles = selectedProject
+  ? files.filter(
+      (file) => file.project?._id === selectedProject
+    )
+  : files;
    return (
     <div className="p-3 sm:p-4 md:p-6 min-h-screen ">
       
@@ -182,75 +186,50 @@ const deleteFile = async (id) => {
         </h1>
       </div>
 
-      {/* UPLOAD SECTION */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
-        
-        <h2 className="font-semibold text-lg mb-4 text-gray-700">
-          Upload File
-        </h2>
+      {/* FILTER SECTION */}
+<div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
-          {/* FILE INPUT */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            onChange={(e) => setSelectedFile(e.target.files[0])}
-            className="border border-gray-200 p-3 rounded-xl text-sm w-full"
-          />
+    {/* LEFT */}
+    <div>
+      <h2 className="font-semibold text-lg text-gray-700">
+        Filter Files
+      </h2>
 
-          {/* PROJECT SELECT */}
-          <select
-            value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
-            className="border border-gray-200 p-3 rounded-xl text-sm w-full"
-          >
-            <option value="">
-              Select Project
-            </option>
+      <p className="text-sm text-gray-400 mt-1">
+        Filter files by project
+      </p>
+    </div>
 
-            {projects.map((project) => (
-              <option key={project._id} value={project._id}>
-                {project.title}
-              </option>
-            ))}
-          </select>
-{uploading && (
-  <div className="text-sm text-blue-600 font-medium">
-    Uploading file, please wait...
+    {/* RIGHT */}
+    <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+
+      <select
+        value={selectedProject}
+        onChange={(e) => setSelectedProject(e.target.value)}
+        className="border border-gray-200 p-3 rounded-xl text-sm min-w-[220px]"
+      >
+        <option value="">
+          All Projects
+        </option>
+
+        {projects.map((project) => (
+          <option key={project._id} value={project._id}>
+            {project.title}
+          </option>
+        ))}
+      </select>
+
+      <button
+        onClick={() => setSelectedProject("")}
+        className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-xl text-sm font-medium transition-all"
+      >
+        Reset
+      </button>
+    </div>
   </div>
-)}
-
-{successMessage && (
-  <div className="text-sm text-green-600 font-medium">
-    {successMessage}
-  </div>
-)}
-          {/* BUTTON */}
-          <button
-  onClick={uploadFile}
-  disabled={uploading}
-  className={`rounded-xl flex items-center justify-center gap-2 transition-all py-3 font-medium w-full text-white
-  ${
-    uploading
-      ? "bg-gray-400 cursor-not-allowed"
-      : "bg-blue-600 hover:bg-blue-700"
-  }`}
->
-  {uploading ? (
-    <>
-      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-      Uploading...
-    </>
-  ) : (
-    <>
-      <Upload size={18} />
-      Upload
-    </>
-  )}
-</button>
-        </div>
-      </div>
+</div>
 
       {/* LOADING */}
       {loading ? (
@@ -262,7 +241,7 @@ const deleteFile = async (id) => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
           
-          {files.map((file) => (
+          {filteredFiles.map((file) => (
             <div
               key={file._id}
               onClick={() => openFile(file)}
@@ -326,7 +305,7 @@ const deleteFile = async (id) => {
       )}
 
       {/* EMPTY */}
-      {!loading && files.length === 0 && (
+      {!loading && filteredFiles.length === 0 && (
         <div className="text-center py-20">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 max-w-md mx-auto">
             <File size={50} className="mx-auto text-gray-300 mb-4" />
