@@ -24,7 +24,7 @@ connectDB();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://swift-lance.vercel.app"
+    "https://swiftlance-sable.vercel.app/"
   ],
   credentials: true,
 }));
