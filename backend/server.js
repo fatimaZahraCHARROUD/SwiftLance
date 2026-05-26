@@ -21,7 +21,13 @@ const app = express();
 connectDB();
 
 // 3. Middlewares
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://swift-lance.vercel.app"
+  ],
+  credentials: true,
+}));
 app.use(express.json()); //Allows Express to read JSON data from requests.
 
 // 4. Définition dyal les Routes
