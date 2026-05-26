@@ -351,10 +351,39 @@ const createProject = async () => {
 
       {/* ================= GRID ================= */}
       {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((p) => (
+
+  <div className="min-h-[400px] flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600"></div>
+  </div>
+
+) : filteredProjects.length === 0 ? (
+
+  <div className="min-h-[300px] flex flex-col items-center justify-center bg-white rounded-2xl shadow-sm border border-gray-100">
+    
+    <div className="text-6xl mb-4">
+      📁
+    </div>
+
+    <h3 className="text-xl font-bold text-gray-700 mb-2">
+      No projects found
+    </h3>
+
+    <p className="text-gray-400 text-sm mb-5">
+      Start by creating your first project
+    </p>
+
+    <button
+      onClick={openAdd}
+      className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl transition"
+    >
+      + Create Project
+    </button>
+
+  </div>
+
+) : (
+
+  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">    {filteredProjects.map((p) => (
             <div key={p._id} className="bg-white p-5 rounded-xl shadow relative">
 
               {/* ACTIONS TOP RIGHT */}
@@ -428,7 +457,7 @@ const createProject = async () => {
         <h2 className="text-xl font-bold mb-4">
           {editMode ? "Update" : "Add"} Project
         </h2>
-
+        Title
         <input
           name="title"
           value={form.title}
@@ -436,14 +465,14 @@ const createProject = async () => {
           className="w-full border p-2 mb-2 rounded-lg"
           placeholder="Title"
         />
-
+        Description
         <textarea
           name="description"
           value={form.description}
           onChange={handleChange}
           className="w-full border p-2 mb-2 rounded-lg"
         />
-
+        Status
         <select
           name="status"
           value={form.status}
@@ -454,7 +483,7 @@ const createProject = async () => {
           <option value="in_progress">In Progress</option>
           <option value="done">Done</option>
         </select>
-
+        Budget
         <input
           type="number"
           name="budget"
@@ -472,7 +501,7 @@ const createProject = async () => {
           <option value={false}>Non Payé</option>
           <option value={true}>Payé</option>
         </select>
-
+        Start Day
         <input
           type="date"
           name="startDate"
@@ -480,7 +509,7 @@ const createProject = async () => {
           onChange={handleChange}
           className="w-full border p-2 mb-2 rounded-lg"
         />
-
+        End Day
         <input
           type="date"
           name="endDate"
@@ -488,7 +517,7 @@ const createProject = async () => {
           onChange={handleChange}
           className="w-full border p-2 mb-2 rounded-lg"
         />
-
+        Client
         <select
           name="client"
           value={form.client}
