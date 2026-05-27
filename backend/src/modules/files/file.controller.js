@@ -20,8 +20,10 @@ const createFile = async (req, res) => {
       type: req.file.mimetype
         ? req.file.mimetype.split("/")[0]
         : "file",
-        
+
       project: req.body.project,
+        user: req.user.id, // ✅ IMPORTANT FIX
+
     };
 
     const file = await fileService.createFile(fileData);
@@ -41,7 +43,7 @@ const createFile = async (req, res) => {
 const getFiles = async (req, res) => {
   try {
 
-    const files = await fileService.getAllFiles();
+    const files = await fileService.getAllFiles(req.user.id);
 
     res.json(files);
 
@@ -65,7 +67,7 @@ const getFilesByProject = async (req, res) => {
 const deleteFile = async (req, res) => {
   try {
 
-    await fileService.deleteFile(req.params.id);
+    await fileService.deleteFile(req.params.id, req.user.id);
 
     res.json({
       message: "File deleted",

@@ -56,6 +56,28 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
           <LayoutDashboard size={20} /> {!isCollapsed && <span>Analytics</span>}
         </NavLink>
         
+        {/* Lien : Payment (Paiements) */}
+        <NavLink to="/app/paiment" className={getStyle} title="Payment">
+          <Wallet size={20} /> {!isCollapsed && <span>Payment</span>}
+        </NavLink>
+
+
+         {/* Lien : Customers (Clients) */}
+        <NavLink to="/app/clients" className={getStyle} title="Customers">
+          <Users size={20} /> {!isCollapsed && <span>Customers</span>}
+        </NavLink>
+
+        {/* Lien : Projects (Projets) */}
+        <NavLink to="/app/projects" className={getStyle} title="Projects">
+          <Briefcase size={20} /> {!isCollapsed && <span>Projects</span>}
+        </NavLink>
+
+
+        {/* Lien : Planning (Calendrier) */}
+        <NavLink to="/app/planning" className={getStyle} title="Planning">
+          <Calendar size={20} /> {!isCollapsed && <span>Planning</span>}
+        </NavLink>
+
         {/* Lien : Notes */}
         <NavLink to="/app/note" className={getStyle} title="Notes">
           <StickyNote size={20} /> {!isCollapsed && <span>Notes</span>}
@@ -66,30 +88,14 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
           <CheckSquare size={20} /> {!isCollapsed && <span>Tasks</span>}
         </NavLink>
 
-        {/* Lien : Payment (Paiements) */}
-        <NavLink to="/app/paiment" className={getStyle} title="Payment">
-          <Wallet size={20} /> {!isCollapsed && <span>Payment</span>}
-        </NavLink>
+        
 
-        {/* Lien : Planning (Calendrier) */}
-        <NavLink to="/app/planning" className={getStyle} title="Planning">
-          <Calendar size={20} /> {!isCollapsed && <span>Planning</span>}
-        </NavLink>
-
-        {/* Lien : Customers (Clients) */}
-        <NavLink to="/app/clients" className={getStyle} title="Customers">
-          <Users size={20} /> {!isCollapsed && <span>Customers</span>}
-        </NavLink>
-
-        {/* Lien : Projects (Projets) */}
-        <NavLink to="/app/projects" className={getStyle} title="Projects">
-          <Briefcase size={20} /> {!isCollapsed && <span>Projects</span>}
-        </NavLink>
+       
 
         {/* Lien : Files (Fichiers) */}
-        <NavLink to="/app/files" className={getStyle} title="Files">
+        {/* <NavLink to="/app/files" className={getStyle} title="Files">
           <Folder size={20} /> {!isCollapsed && <span>Files</span>}
-        </NavLink>
+        </NavLink> */}
       </nav>
 
       {/* SECTION PIED DE PAGE : Bouton de déconnexion */}

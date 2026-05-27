@@ -151,7 +151,7 @@ export default function Tasks() {
 
   // Rendu de l'écran d'attente (Spinner) pendant le chargement des données depuis l'API
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
+    <div className="min-h-screen flex items-center justify-center bg-white">
        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600"></div>
     </div>
   );

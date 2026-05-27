@@ -35,13 +35,13 @@ const upload = multer({ storage });
 
 
 // GET FILES
-router.get("/", fileController.getFiles);
-router.get("/project/:projectId", fileController.getFilesByProject);
+router.get("/",auth, fileController.getFiles);
+router.get("/project/:projectId", auth,fileController.getFilesByProject);
 
 // CREATE FILE
-router.post( "/", upload.single("file"), fileController.createFile);
+router.post( "/", auth, upload.single("file"), fileController.createFile);
 
 // DELETE FILE
-router.delete("/:id", fileController.deleteFile);
+router.delete("/:id",auth, fileController.deleteFile);
 
 module.exports = router;

@@ -5,8 +5,8 @@ const createFile = async (data) => {
   return await File.create(data);
 };
 
-const getAllFiles = async () => {
-  return await File.find()
+const getAllFiles = async (userId) => {
+  return await File.find({ user: userId })
     .populate("project") //replaces project ID with full project info
     .sort({ createdAt: -1 });//newest files first
 };
@@ -17,9 +17,9 @@ const getFilesByProject = async (projectId) => {
     .sort({ createdAt: -1 });
 };
 
-const deleteFile = async (id) => {
+const deleteFile = async (id,userId) => {
 
-  const file = await File.findById(id);
+  const file = await File.findOne({ _id: id, user: userId });
 
   if (!file) {
     throw new Error("File not found");

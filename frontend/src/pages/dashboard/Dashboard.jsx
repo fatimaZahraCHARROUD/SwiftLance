@@ -337,7 +337,7 @@ const yLabels = Array.from({ length: yAxisSteps + 1 }, (_, i) =>
           </div>
 
           {/* DEADLINES */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-red-200 rounded-2xl p-6 shadow-sm">
             <h2 className="text-xl font-bold text-slate-800 mb-5">
               Upcoming Deadlines
             </h2>
