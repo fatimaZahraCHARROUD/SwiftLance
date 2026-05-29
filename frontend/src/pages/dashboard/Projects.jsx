@@ -332,11 +332,10 @@ const createProject = async () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="">
 
 {/* HEADER */}
-{/* HEADER */}
-<div className="px-12 mb-10">
+<div className=" mb-10">
 
   <h1 className="text-4xl font-black text-slate-900 tracking-tight">
     Projects
@@ -349,7 +348,7 @@ const createProject = async () => {
 </div>
 
 {/* ACTION BAR */}
-<div className="w-full px-12 mx-auto mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
+<div className="w-full  mx-auto mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
 
   {/* SEARCH */}
   <div className="relative w-full sm:max-w-md">
@@ -367,6 +366,7 @@ const createProject = async () => {
                  text-sm text-slate-900 font-semibold placeholder:text-slate-400"
       onChange={(e) => setSearchTerm(e.target.value)}
     />
+    
   </div>
 
   {/* BUTTON */}
@@ -383,7 +383,7 @@ const createProject = async () => {
 </div>
 
       {/* ================= TABS ================= */}
-      <div className="flex gap-3 mb-6">
+      <div className="mb-5 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {["all", "planning", "in_progress", "done"].map((tab) => (
           <button
             key={tab}
@@ -482,7 +482,7 @@ const createProject = async () => {
 
       {/* ================= MODAL ================= */}
       {isModalOpen && (
-  <div className="fixed inset-0 z-50 bg-black/40 overflow-y-auto">
+  <div className="fixed inset-0 z-50 bg-black/40 overflow-y-auto pl-20">
     
     <div className="min-h-screen flex justify-center px-4 py-6 sm:ml-64">
       
@@ -587,8 +587,8 @@ const createProject = async () => {
 )}
 
 {filesOpen && selectedProject && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div className="bg-white w-[600px] p-6 rounded-2xl relative">
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 pl-20">
+    <div className="bg-white w-[280px] p-6 rounded-2xl relative">
 
       <button
         onClick={() => setFilesOpen(false)}
@@ -602,18 +602,18 @@ const createProject = async () => {
       </h2>
 
       {/* UPLOAD */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex  mb-4 grid">
         <input
           ref={fileInputRef}
           type="file"
           onChange={(e) => setSelectedFile(e.target.files[0])}
-          className="border p-2 flex-1"
+          className="border p-2 flex-1 w-full mb-2"
         />
 
     <button
   onClick={uploadProjectFile}
   disabled={uploading}
-  className="bg-blue-600 text-white px-4 rounded flex items-center justify-center gap-2"
+  className="bg-blue-600 text-white px-4 rounded flex items-center justify-center "
 >
   {uploading ? "Uploading..." : "Add"}
 </button>
@@ -654,7 +654,7 @@ const createProject = async () => {
 
       {/* ================= DETAILS MODAL ================= */}
       {detailsOpen && selectedProject && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 pl-20">
 
           <div className="bg-white w-[700px] max-h-[90vh] overflow-y-auto p-6 rounded-2xl relative shadow-2xl">
 

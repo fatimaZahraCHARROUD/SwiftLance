@@ -97,7 +97,7 @@ export default function PaymentDashboard() {
 
   // 7. Rendu de l'Interface Principale
   return (
-    <div className="p-8 space-y-8 bg-white min-h-screen font-sans">
+    <div className=" space-y-8 bg-white min-h-screen font-sans">
       
       {/* En-tête de la page (Rapport Financier) */}
       <div className="flex justify-between items-center">

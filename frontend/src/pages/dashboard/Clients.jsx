@@ -152,9 +152,8 @@ export default function Clients() {
   return (
     <div className="min-h-screen bg-white font-sans pb-16 pt-12">
       {/* HEADER */}
-<div className="px-12 mb-10">
-  <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-    Customers
+<div className=" mb-6 sm:mb-8">
+<h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">    Customers
   </h1>
 
   <p className="text-slate-500 mt-3 text-lg max-w-2xl">
@@ -162,7 +161,7 @@ export default function Clients() {
   </p>
 </div>
       {/* ACTION BAR : Barre supérieure contenant la recherche et le bouton d'ajout */}
-      <div className="w-full px-12 mx-auto mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="w-full mx-auto mb-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
         <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
           {/* Input de recherche : Met à jour l'état "searchTerm" à chaque lettre tapée */}
@@ -187,17 +186,17 @@ export default function Clients() {
       </div>
 
       {/* TABLEAU DES CLIENTS */}
-      <div className="w-full px-12 mx-auto">
+      <div className="w-full  mx-auto">
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50/70 border-b border-slate-200">
-                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest">Client Name</th>
-                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest">Type</th>
-                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest">Contact</th>
-                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest text-center">Address</th>
-                  <th className="px-8 py-5 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest text-right">Actions</th>
+                  <th className="px-4 py-3 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest">Client Name</th>
+                  <th className="px-4 py-3 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest">Type</th>
+                  <th className="px-4 py-3 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest">Contact</th>
+                  <th className="px-4 py-3 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest text-center">Address</th>
+                  <th className="px-4 py-3 text-[11px] font-extrabold uppercase text-[#334155] tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -209,9 +208,9 @@ export default function Clients() {
                   </tr>
                 ) : (
                   filteredClients.map((client) => (
-                    <tr key={client._id} className="hover:bg-slate-50/50 transition-colors h-16">
+                    <tr key={client._id} classNameclassName="bg-white rounded-2xl w-full max-w-md p-4 sm:p-6">
                       
-                      <td className="px-8 py-4 whitespace-nowrap">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <div className="w-7 h-7 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center justify-center text-indigo-600">
                          
@@ -272,7 +271,7 @@ export default function Clients() {
 
       {/* COMPOSANT MODAL : Fenêtre flottante (Formulaire d'ajout / édition) */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 pl-20">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl relative border border-slate-200">
             {/* Bouton de fermeture en forme de croix 'X' */}
             <button 
@@ -335,7 +334,7 @@ export default function Clients() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-extrabold uppercase text-slate-500 mb-1 ml-1">City/Address</label>
+                  <label className="block text-xs font-extrabold uppercase text-slate-500 mb-1 ml-1">Address</label>
                   <input 
                     type="text"
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold bg-white focus:outline-none focus:border-indigo-500 transition-all"

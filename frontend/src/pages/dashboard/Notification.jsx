@@ -60,7 +60,7 @@ export default function SwiftLanceDeadlines() {
     };
 
     return (
-        <div className="p-8 bg-white min-h-screen font-sans">
+        <div className="bg-white min-h-screen font-sans">
             <header className="mb-10 flex justify-between items-end">
                 <div>
                     <h1 className="text-4xl font-black text-[#1e222d] tracking-tight">Critical Deadlines</h1>

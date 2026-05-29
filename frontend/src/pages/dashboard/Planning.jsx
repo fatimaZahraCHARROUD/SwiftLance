@@ -127,9 +127,9 @@ export default function PlanningCalendar() {
   };
 
   return (
-<div className="h-screen w-full bg-white flex flex-col px-3 sm:px-6 lg:px-8 py-4 overflow-hidden">
+<div className="h-screen w-full bg-white flex flex-col  py-4 overflow-hidden ">
      {/* HEADER */}
-<div className="px-12 mb-6">
+<div className=" mb-6">
   <h1 className="text-3xl font-black text-slate-900 tracking-tight">
     Planning Calendar
   </h1>
@@ -228,7 +228,7 @@ export default function PlanningCalendar() {
 
 
       {showModal && selectedDay && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center pl-20">
           <div className="bg-white w-[550px] p-5 rounded-lg relative">
 
             <button
@@ -295,7 +295,7 @@ export default function PlanningCalendar() {
 
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center pl-20">
           <div className="bg-white w-[400px] p-4 rounded-lg">
 
             <h2 className="font-bold text-blue-600 mb-2">
@@ -348,7 +348,7 @@ export default function PlanningCalendar() {
 
 
       {drawerItem && (
-        <div className="fixed right-0 top-0 h-full w-[350px] bg-white border-l p-4">
+        <div className="fixed right-0 top-0 h-full w-[350px] bg-white border-l p-4 sm:pl-20">
 
           <button
             onClick={() => setDrawerItem(null)}

@@ -114,7 +114,7 @@ export default function Note() {
   return (
     <div className="min-h-screen bg-white font-sans pb-16 pt-12">
       {/* HEADER */}
-<div className="px-12 mb-10">
+<div className=" mb-10">
   <h1 className="text-4xl font-black text-slate-900 tracking-tight">
     Notes
   </h1>
@@ -124,7 +124,7 @@ export default function Note() {
   </p>
 </div>
       {/* --- Action Bar (Perfect Match to Tasks) --- */}
-      <div className="w-full px-12 mx-auto mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="w-full  mx-auto mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
           <input 
@@ -143,7 +143,7 @@ export default function Note() {
       </div>
 
       {/* --- Main Table Container (Perfect Match to Tasks) --- */}
-      <div className="w-full px-12 mx-auto">
+      <div className="w-full  mx-auto">
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -228,7 +228,7 @@ export default function Note() {
 
       {/* --- Add / Edit Modal (Perfect Match to Tasks) --- */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 pl-20">
           <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl relative border border-slate-200">
             <button 
               onClick={() => setIsModalOpen(false)} 
@@ -299,7 +299,7 @@ export default function Note() {
 
       {/* --- View Details Modal (Perfect Match to Tasks Style) --- */}
       {viewingNote && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 pl-20">
           <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl relative border border-slate-200">
             <button 
               onClick={() => setViewingNote(null)} 

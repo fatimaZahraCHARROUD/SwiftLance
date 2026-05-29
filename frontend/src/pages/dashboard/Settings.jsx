@@ -94,7 +94,7 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen bg-white font-sans pb-16 pt-12">
-      <div className="w-full max-w-2xl px-12 mx-auto">
+      <div className="w-full max-w-2xl  mx-auto">
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8">
           
           {/* Section d'en-tête (Titre et description de la page) */}

@@ -156,7 +156,7 @@ const yLabels = Array.from({ length: yAxisSteps + 1 }, (_, i) =>
 
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen ">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
         <div>

@@ -79,13 +79,13 @@ function Hautpage() {
 
   // 4. RENDU VISUEL (INTERFACE UTILISATEUR)
   return (
-    <div className="h-20 bg-[#ffffff] flex items-center justify-between px-8">
+    <div className="h-20 bg-[#ffffff] flex items-center justify-between px-2">
 
       {/* Espaceur vide à gauche pour pousser le reste du contenu à droite grâce au justify-between */}
       <div></div>
 
       {/* Conteneur de droite (Notifications, Paramètres et Profil) */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1">
 
         {/* --- Icône de Cloche avec son compteur rouge --- */}
         <Link
